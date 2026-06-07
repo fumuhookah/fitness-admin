@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ Панел - Fitness1</title>
+    <title>Админ Панел - Fitness1 (Групиран импорт)</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; display: flex; color: #333; }
         
@@ -18,43 +18,35 @@
         /* ОСНОВНО СЪДЪРЖАНИЕ */
         .main-content { flex: 1; margin-left: 260px; padding: 20px; box-sizing: border-box; min-height: 100vh; }
         
-        /* СЕКЦИИ/ЕКРАНИ */
-        .admin-view { display: none; }
-        .admin-view.active { display: block; }
-
-        /* ФИЛТРИ И КАРТИ */
+        /* КОМПОНЕНТИ */
         .panel-box { background: white; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
-        input[type="text"], input[type="date"], select { padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
-        .btn-blue { background-color: #007bff; color: white; border: none; padding: 9px 18px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-blue:hover { background-color: #0056b3; }
+        input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
+        .btn-blue { background-color: #28a745; color: white; border: none; padding: 9px 18px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-blue:hover { background-color: #218838; }
 
-        /* ТАБОВЕ */
-        .tabs-container { display: flex; gap: 5px; margin-top: 15px; border-bottom: 2px solid #ddd; padding-bottom: 1px; }
-        .tab { padding: 8px 15px; font-size: 12px; font-weight: bold; border: 1px solid #ddd; border-bottom: none; background: #e9ecef; border-radius: 4px 4px 0 0; cursor: pointer; }
-        .tab.active { background: white; border-top: 3px solid #6c757d; color: black; margin-bottom: -2px; padding-bottom: 9px; }
-
-        /* СПИСЪК С ПОРЪЧКИ */
-        .order-card { display: flex; background: white; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .order-client { width: 25%; padding: 15px; background-color: #fdfdfd; border-right: 1px solid #dee2e6; font-size: 13px; line-height: 1.5; }
-        .order-products { width: 60%; padding: 15px; }
-        .order-actions { width: 15%; padding: 15px; background: #f8f9fa; border-left: 1px solid #dee2e6; text-align: center; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
-        
-        .products-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .products-table th { background: #f8f9fa; text-align: left; padding: 8px; font-size: 11px; color: #666; border-bottom: 1px solid #dee2e6; }
-        .products-table td { padding: 10px 8px; border-bottom: 1px solid #eee; }
-        
-        .badge { padding: 2px 6px; font-size: 10px; font-weight: bold; color: white; border-radius: 3px; display: inline-block; }
-        .badge-b2b { background-color: #0056b3; }
-        .badge-pharma { background-color: #28a745; }
-        .status-confirmed { background-color: #28a745; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 3px; display: inline-block; }
-        .action-btn { padding: 6px; background: white; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; width: 100%; }
-
-        /* ТАБЛИЦА ЗА ИМПОРТИРАНИ ПРОДУКТИ */
+        /* СТАТУСИ */
         .import-status { padding: 12px; margin-top: 15px; border-radius: 4px; font-weight: bold; display: none; }
         .status-loading { background: #cce5ff; color: #004085; }
         .status-success { background: #d4edda; color: #155724; }
         .status-error { background: #f8d7da; color: #721c24; }
+
+        /* ТАБЛИЦА С СГЪВАЕМИ РЕДОВЕ */
+        .products-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .products-table th { background: #f8f9fa; text-align: left; padding: 10px 8px; font-size: 11px; color: #666; border-bottom: 2px solid #dee2e6; }
+        
+        /* Главен ред на продукта */
+        .main-product-row { background: #ffffff; cursor: pointer; transition: background 0.2s; }
+        .main-product-row:hover { background: #f1f3f5; }
+        .main-product-row td { padding: 12px 8px; border-bottom: 1px solid #dee2e6; font-weight: bold; }
+        
+        /* Ред с разновидност (Вкус / Разфасовка) */
+        .variation-row { background: #fafbfc; display: none; }
+        .variation-row td { padding: 8px 8px; border-bottom: 1px solid #eee; padding-left: 30px; color: #555; }
+
+        .badge-variations { background: #6c757d; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
+        .badge-stock { padding: 3px 6px; font-size: 11px; border-radius: 3px; font-weight: bold; }
+        .timer-badge { background: #e2e3e5; color: #383d41; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; display: inline-block; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -62,9 +54,9 @@
     <div class="sidebar">
         <div class="sidebar-header">Админ панел</div>
         <ul class="menu-list">
-            <li class="menu-item" id="menu-home">Начало</li>
-            <li class="menu-item active" id="menu-orders">Поръчки</li>
-            <li class="menu-item" id="menu-import" style="background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;">📥 Feed Import</li>
+            <li class="menu-item">Начало</li>
+            <li class="menu-item">Поръчки</li>
+            <li class="menu-item active" style="background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;">📥 Feed Import</li>
             <li class="menu-item">Категории</li>
             <li class="menu-item">Марки</li>
             <li class="menu-item">Продукти</li>
@@ -74,75 +66,50 @@
 
     <div class="main-content">
         
-        <div id="view-orders" class="admin-view active">
-            <div class="panel-box">
-                <div class="row">
-                    <input type="text" id="searchInput" placeholder="Напиши име, телефон или град..." style="width: 250px;">
-                    <button class="btn-blue">Търси</button>
-                </div>
-                <div class="tabs-container">
-                    <div class="tab active" data-filter="all">Всички Днес (2)</div>
-                    <div class="tab" data-filter="B2B">B2B (1)</div>
-                    <div class="tab" data-filter="Pharma">Pharma (1)</div>
-                </div>
-            </div>
-            
-            <div class="orders-list">
-                <div class="order-card" data-type="B2B">
-                    <div class="order-client">
-                        <b>RAP #2090049</b> <span class="badge badge-b2b">B2B</span>
-                        <div style="font-size: 15px; font-weight: bold; margin: 5px 0;">Кристиян Климентов</div>
-                        <span class="status-confirmed">ПОТВЪРДЕНА</span>
-                        <div style="margin-top:5px;">📞 0884684777</div>
-                    </div>
-                    <div class="order-products">
-                        <table class="products-table">
-                            <thead><tr><th>Продукт</th><th>Цена</th><th>Промо</th></tr></thead>
-                            <tbody><tr><td><b>2 x</b> Shaker Milky Whey Shake</td><td>5.09 €</td><td style="color:red;">3.05 €</td></tr></tbody>
-                        </table>
-                    </div>
-                    <div class="order-actions"><button class="action-btn">✏️ Редакция</button></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-import" class="admin-view">
-            <h2>📥 Модул: Външен Feed Импорт (Режим: Fitness1 XML)</h2>
-            <p style="color: #666; font-size: 14px;">Изберете локален XML файл или въведете линк, за да заредите продуктовата база данни.</p>
+        <div>
+            <h2>📥 Умен Модул: Групиране по Разновидности (Вкусове и Разфасовки)</h2>
+            <p style="color: #666; font-size: 14px;">Системата автоматично обединява опциите под един общ продукт за чист и подреден склад.</p>
             
             <div class="panel-box">
                 <div class="row" style="margin-bottom: 20px; background: #eef2f7; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; display: block;">
-                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А (Препоръчителен): Избери XML файл от компютъра</label>
-                    <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">Заобикаля всички CORS защити на браузъра и чете големи файлове моментално!</p>
-                    <input type="file" id="feedFileInput" accept=".xml" style="font-size: 13px; padding: 5px; background: white; border: 1px dashed #999; width: 100%; box-sizing: border-box;">
+                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А: Избери XML файл от компютъра (Препоръчително)</label>
+                    <input type="file" id="feedFileInput" accept=".xml" style="font-size: 13px; padding: 5px; background: white; border: 1px dashed #999; width: 100%; box-sizing: border-box; cursor: pointer;">
                 </div>
 
                 <div style="text-align: center; font-weight: bold; color: #888; margin: 15px 0; font-size: 12px;">— ИЛИ —</div>
 
                 <div class="row" style="display: flex; gap: 15px; align-items: flex-end;">
                     <div style="display: flex; flex-direction: column; flex: 1;">
-                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Вариант Б: Зареждане чрез XML URL адрес:</label>
+                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Вариант Б: Автоматично зареждане чрез URL адрес:</label>
                         <input type="text" id="feedUrlInput" placeholder="Постави линка към XML файла тук..." style="width: 100%; box-sizing: border-box;">
                     </div>
-                    <button class="btn-blue" id="btnRunImport" style="background-color: #28a745; height: 35px;">Стартирай Импорт</button>
+                    <button class="btn-blue" id="btnRunImport">Стартирай Импорт</button>
                 </div>
-                
-                <small style="color: #777; display: block; margin-top: 10px;">💡 <i>Ако не изберете файл и оставите URL полето празно, системата ще пусне демонстрационния импорт.</i></small>
+
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: flex; align-items: center;">
+                    <input type="checkbox" id="chkAutoRefresh" style="cursor: pointer;">
+                    <label style="font-size: 13px; font-weight: bold; margin-left: 8px; cursor: pointer;" for="chkAutoRefresh">
+                        🔄 Автоматично обновяване на всеки час (Изисква Вариант Б)
+                    </label>
+                    <span id="txtTimer" class="timer-badge" style="display: none;">Следващо обновяване след: 60:00</span>
+                </div>
                 
                 <div id="importStatusBox" class="import-status"></div>
             </div>
 
             <div class="panel-box" id="importedProductsBox" style="display: none;">
-                <h3>Налети продукти в реално време:</h3>
-                <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
+                <h3 id="txtTotalProducts">Уникални продукти в базата: 0</h3>
+                <p style="font-size: 12px; color: #666; margin-top: -10px;">💡 Кликни върху някой ред, за да разгънеш и видиш наличните вкусове и разфасовки.</p>
+                
+                <div style="max-height: 650px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
                     <table class="products-table" id="importedProductsTable">
                         <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 10;">
                             <tr>
-                                <th>ID код</th>
+                                <th>Име на продукт / Код на опция</th>
                                 <th>Марка</th>
-                                <th>Име на продукт + Разфасовка</th>
-                                <th>Регулярна Цена</th>
-                                <th>Статус Наличност</th>
+                                <th>Вкус / Разфасовка</th>
+                                <th>Цена (B2B)</th>
+                                <th>Статус</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,159 +122,170 @@
     </div>
 
     <script>
-        // НАВИГАЦИЯ
-        const menuOrders = document.getElementById('menu-orders');
-        const menuImport = document.getElementById('menu-import');
-        const viewOrders = document.getElementById('view-orders');
-        const viewImport = document.getElementById('view-import');
+        let autoRefreshInterval = null;
+        let countdownInterval = null;
+        let secondsLeft = 3600;
 
-        menuOrders.addEventListener('click', () => {
-            menuOrders.classList.add('active'); menuImport.classList.remove('active');
-            viewOrders.classList.add('active'); viewImport.classList.remove('active');
-        });
-
-        menuImport.addEventListener('click', () => {
-            menuImport.classList.add('active'); menuOrders.classList.remove('active');
-            viewImport.classList.add('active'); viewOrders.classList.remove('active');
-        });
-
-        // ФУНКЦИЯ ЗА ПАРСВАНЕ И ОБРАБОТКА НА XML ТЕКСТА
-        function parseXmlAndGetProducts(textData) {
+        // ИНТЕЛИГЕНТЕН XML ПАРСЕР С АВТОМАТИЧНО ГРУПИРАНЕ
+        function parseXmlAndGroupProducts(textData) {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(textData, "text/xml");
-            
-            // Търсим таговете за име на продукта от твоята структура
             const productElements = xmlDoc.getElementsByTagName("product_name");
             
             if(productElements.length === 0) {
-                throw new Error("Файлът беше прочетен, но вътре липсват продуктови тагове (<product_name>).");
+                throw new Error("Файлът липсва или структурата на таговете е различна.");
             }
 
-            let productsData = [];
-            // Зареждаме до първите 500 продукта, за да работи таблицата бързо
-            const limit = Math.min(productElements.length, 500);
+            let catalogMap = {};
 
-            for (let i = 0; i < limit; i++) {
-                const parent = productElements[i].parentNode;
+            for (let i = 0; i < productElements.length; i++) {
+                const parentNode = productElements[i].parentNode;
                 
-                const id = parent.getElementsByTagName("id")[0]?.textContent || "N/A";
-                const brand = parent.getElementsByTagName("brand_name")[0]?.textContent || "Няма марка";
-                const pName = productElements[i].textContent;
-                const pack = parent.getElementsByTagName("pack")[0]?.textContent || "";
-                const fullName = pack ? `${pName} (${pack})` : pName;
+                const id = parentNode.getElementsByTagName("id")[0]?.textContent || "N/A";
+                const brand = parentNode.getElementsByTagName("brand_name")[0]?.textContent || "Няма марка";
+                const originalName = productElements[i].textContent;
                 
-                const regPrice = parent.getElementsByTagName("regular_price")[0]?.textContent || "0.00";
-                const salePrice = parent.getElementsByTagName("sale_price")[0]?.textContent || "0.00";
-                const currency = parent.getElementsByTagName("currency")[0]?.textContent || "EUR";
+                // Търсим таг за свързване (parent_id или group_id)
+                let parentId = parentNode.getElementsByTagName("parent_id")[0]?.textContent || 
+                               parentNode.getElementsByTagName("group_id")[0]?.textContent || 
+                               parentNode.getElementsByTagName("main_id")[0]?.textContent || "";
                 
-                let finalPrice = `${regPrice} ${currency}`;
+                const pack = parentNode.getElementsByTagName("pack")[0]?.textContent || "";
+                const flavor = parentNode.getElementsByTagName("flavor")[0]?.textContent || 
+                               parentNode.getElementsByTagName("taste")[0]?.textContent || "";
+                
+                const regPrice = parentNode.getElementsByTagName("regular_price")[0]?.textContent || "0.00";
+                const salePrice = parentNode.getElementsByTagName("sale_price")[0]?.textContent || "0.00";
+                const currency = parentNode.getElementsByTagName("currency")[0]?.textContent || "EUR";
+                
+                let priceHtml = `${regPrice} ${currency}`;
                 if (parseFloat(salePrice) > 0) {
-                    finalPrice = `<span style="color:red; font-weight:bold;">${salePrice} ${currency}</span> <del style="color:#777; font-size:11px;">${regPrice}</del>`;
+                    priceHtml = `<span style="color:red; font-weight:bold;">${salePrice} ${currency}</span> <del style="color:#777; font-size:11px;">${regPrice}</del>`;
                 }
 
-                const available = parent.getElementsByTagName("available")[0]?.textContent || "0";
+                const available = parentNode.getElementsByTagName("available")[0]?.textContent || "0";
                 const stockStatus = available === "1" ? "В наличност" : "Изчерпан";
 
-                productsData.push({
+                // Ако продуктът е вариация, неговият групов ключ е parentId. Ако е самостоятелен, е собственото му ID.
+                let mainGroupKey = parentId ? parentId : id;
+
+                // Изчистваме името от излишни повторения
+                let cleanMainName = originalName;
+
+                if (!catalogMap[mainGroupKey]) {
+                    catalogMap[mainGroupKey] = {
+                        groupId: mainGroupKey,
+                        brand: brand,
+                        productName: cleanMainName,
+                        variations: []
+                    };
+                }
+
+                catalogMap[mainGroupKey].variations.push({
                     sku: id,
-                    brand: brand,
-                    name: fullName,
-                    price: finalPrice,
+                    pack: pack,
+                    flavor: flavor,
+                    price: priceHtml,
                     stock: stockStatus
                 });
             }
-            return productsData;
+            return Object.values(catalogMap);
         }
 
-        // ФУНКЦИЯ ЗА ПРИНТИРАНЕ НА ТАБЛИЦАТА
-        function displayProducts(productsData) {
+        // ИЗРИСУВАНЕ НА СГЪВАЕМАТА ТАБЛИЦА
+        function displayGroupedCatalog(groupedData) {
             const statusBox = document.getElementById('importStatusBox');
             const productsBox = document.getElementById('importedProductsBox');
             const tableBody = document.querySelector('#importedProductsTable tbody');
+            document.getElementById('txtTotalProducts').innerText = `Уникални продукти в базата: ${groupedData.length}`;
 
-            let rowsHtml = "";
-            productsData.forEach(prod => {
-                rowsHtml += `<tr>
-                    <td><code>#${prod.sku}</code></td>
-                    <td><b>${prod.brand}</b></td>
-                    <td style="color:#0056b3; font-weight:bold;">${prod.name}</td>
-                    <td><b>${prod.price}</b></td>
-                    <td><span style="background:${prod.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${prod.stock === 'В наличност' ? '#2e7d32' : '#c62828'}; padding:3px 6px; font-size:11px; border-radius:3px; font-weight:bold;">${prod.stock}</span></td>
-                </tr>`;
-            });
+            let html = "";
             
-            tableBody.innerHTML = rowsHtml;
+            groupedData.forEach((group, index) => {
+                const totalVars = group.variations.length;
+                const hasMultiple = totalVars > 1;
+                const groupClass = `group-${index}`;
+
+                // 1. Сглобяваме Главния ред на продукта
+                html += `<tr class="main-product-row" onclick="toggleVariations('${groupClass}')">
+                    <td style="color: #1a1a1a;">
+                        ${hasMultiple ? '📁 ' : '📄 '} ${group.productName}
+                        ${hasMultiple ? `<span class="badge-variations">${totalVars} опции</span>` : ''}
+                    </td>
+                    <td><b>${group.brand}</b></td>
+                    <td style="color: #666; font-style: italic;">
+                        ${hasMultiple ? 'Различни вкусове/размери' : (group.variations[0].pack || group.variations[0].flavor || 'Основен')}
+                    </td>
+                    <td>${hasMultiple ? 'Виж разновидности' : group.variations[0].price}</td>
+                    <td>
+                        ${hasMultiple ? '—' : `<span class="badge-stock" style="background:${group.variations[0].stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${group.variations[0].stock === 'В наличност' ? '#2e7d32' : '#c62828'};">${group.variations[0].stock}</span>`}
+                    </td>
+                </tr>`;
+
+                // 2. Сглобяваме скритите редове с опциите под него
+                group.variations.forEach(v => {
+                    let optionText = [];
+                    if(v.flavor) optionText.push(`Вкус: ${v.flavor}`);
+                    if(v.pack) optionText.push(`Разфасовка: ${v.pack}`);
+                    let finalOptionDesc = optionText.length > 0 ? optionText.join(' / ') : "Основен вариант";
+
+                    html += `<tr class="variation-row ${groupClass}">
+                        <td style="padding-left: 35px; border-left: 3px solid #007bff;">
+                            <code style="background:#e9ecef; padding:2px 5px; border-radius:3px;">#${v.sku}</code>
+                        </td>
+                        <td></td>
+                        <td style="color: #0056b3; font-weight: bold;">↳ ${finalOptionDesc}</td>
+                        <td><b>${v.price}</b></td>
+                        <td><span class="badge-stock" style="background:${v.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${v.stock === 'В наличност' ? '#2e7d32' : '#c62828'};">${v.stock}</span></td>
+                    </tr>`;
+                });
+            });
+
+            tableBody.innerHTML = html;
             statusBox.className = 'import-status status-success';
-            statusBox.innerText = `✅ Успех! Файлът е обработен. Налети продукти в панела: ${productsData.length}`;
+            statusBox.innerText = `✅ Успех! Всички продукти са успешно групирани и подредени по опции.`;
             productsBox.style.display = 'block';
         }
 
-        // МЕТОД А: СЛУШАТЕЛ ЗА ПРИКАЧЕН ФАЙЛ
+        // ФУНКЦИЯ ЗА КЛИК: ПОКАЗВАНЕ / СКРИВАНЕ
+        function toggleVariations(className) {
+            const rows = document.getElementsByClassName(className);
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].style.display === "table-row") {
+                    rows[i].style.style.display = "none";
+                } else {
+                    rows[i].style.display = "table-row";
+                }
+            }
+        }
+
+        // СЛУШАТЕЛ ЗА ФАЙЛ (ВАРИАНТ А)
         document.getElementById('feedFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             const statusBox = document.getElementById('importStatusBox');
-            const productsBox = document.getElementById('importedProductsBox');
-            
+            document.getElementById('importedProductsBox').style.display = 'none';
             statusBox.style.display = 'block';
             statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Четем XML файла локално... Моля изчакайте малко, тъй като файлът съдържа много данни.';
-            productsBox.style.display = 'none';
+            statusBox.innerText = '⏳ Роботът преглежда пълния каталог и групира вкусовете... Моля изчакайте.';
 
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
-                    const parsedProducts = parseXmlAndGetProducts(evt.target.result);
-                    displayProducts(parsedProducts);
+                    const groupedCatalog = parseXmlAndGroupProducts(evt.target.result);
+                    displayGroupedCatalog(groupedCatalog);
                 } catch (error) {
                     statusBox.className = 'import-status status-error';
-                    statusBox.innerHTML = `❌ <b>Грешка при обработка на файла:</b> ${error.message}`;
+                    statusBox.innerHTML = `❌ <b>Грешка:</b> ${error.message}`;
                 }
             };
             reader.readAsText(file);
         });
 
-        // МЕТОД Б: СЛУШАТЕЛ ЗА БУТОНА С URL ЛИНК
-        document.getElementById('btnRunImport').addEventListener('click', async () => {
+        // СЛУШАТЕЛ ЗА ЛИНК (ВАРИАНТ Б)
+        const runUrlImport = async () => {
             const urlInput = document.getElementById('feedUrlInput').value.trim();
             const statusBox = document.getElementById('importStatusBox');
-            const productsBox = document.getElementById('importedProductsBox');
-            const tableBody = document.querySelector('#importedProductsTable tbody');
             
-            statusBox.style.display = 'block';
-            statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Опит за изтегляне през коригиран CORS прокси тунел...';
-            productsBox.style.display = 'none';
-            tableBody.innerHTML = '';
-
-            if (urlInput === "") {
-                // Демо симулация
-                const demoData = [{
-                    sku: "94803",
-                    brand: "6PAK Nutrition",
-                    name: "6PAK Shaker Pattern (600 мл)",
-                    price: "4.95 EUR",
-                    stock: "В наличност"
-                }];
-                displayProducts(demoData);
-            } else {
-                try {
-                    // Коригиран синтаксис за проксито с параметър ?url=
-                    const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(urlInput);
-                    
-                    const response = await fetch(proxyUrl);
-                    if (!response.ok) throw new Error("Прокси сървърът отказа заявката или файлът е прекалено голям за безплатен тунел.");
-                    
-                    const textData = await response.text();
-                    const parsedProducts = parseXmlAndGetProducts(textData);
-                    displayProducts(parsedProducts);
-                } catch (error) {
-                    statusBox.className = 'import-status status-error';
-                    statusBox.innerHTML = `❌ <b>Грешка при импорт:</b> Външната връзка е блокирана от сървъра.<br><small>💡 <b>Използвай синия Вариант А по-горе!</b> Изтегли файла на компютъра си и го прикачи оттам – работи безотказно за 1 секунда!</small>`;
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+            if (urlInput ===
