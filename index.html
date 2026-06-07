@@ -79,8 +79,8 @@
             
             <div class="panel-box">
                 <div class="row" style="margin-bottom: 20px; background: #eef2f7; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; display: block;">
-                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А (Препоръчителен): Избери XML файл от компютъра</label>
-                    <p style="margin: 0 0 8px 0; font-size: 12px; color: #555;">Заобикаля всички CORS защити на браузъра и чете големи файлове моментално!</p>
+                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А: Избери XML файл от компютъра</label>
+                    <p style="margin: 0 0 8px 0; font-size: 12px; color: #555;">Заобикаля абсолютно всички CORS защити на браузъра и чете големи файлове моментално!</p>
                     <input type="file" id="feedFileInput" accept=".xml" style="font-size: 13px; padding: 5px; background: white; border: 1px dashed #999; width: 100%; box-sizing: border-box; cursor: pointer;">
                 </div>
 
@@ -174,7 +174,7 @@
                 const available = parentNode.getElementsByTagName("available")[0]?.textContent || "0";
                 const stockStatus = available === "1" ? "В наличност" : "Изчерпан";
 
-                // Вземаме базовите стойности от XML-а (ако съществуват)
+                // Вземаме базовите стойности от XML-а
                 let defaultDesc = parentNode.getElementsByTagName("description")[0]?.textContent || "Няма въведено описание.";
                 let defaultImg = parentNode.getElementsByTagName("image")[0]?.textContent || "placeholder.jpg";
 
@@ -284,7 +284,7 @@
                         <td><b>${group.brand}</b></td>
                         <td>${singleDesc}</td>
                         <td><b>${singleVar.price}</b></td>
-                        <td><span class="badge-stock" style="background:${singleVar.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${singleVar.stock === 'В наличност' ? '#2e7d32' : '#c62828'};">${singleVar.stock}</span></td>
+                        <td><span class="badge-stock" style="background:${singleVar.stock === 'В налично化' ? '#e8f5e9' : '#ffebee'}; color:${singleVar.stock === 'В наличност' ? '#2e7d32' : '#c62828'};">${singleVar.stock}</span></td>
                     </tr>
                     <tr class="row-variation single-edit-${index}">
                         <td colspan="5" style="padding-left: 20px; background:#fafbfc; border-left: 4px solid #28a745;">
@@ -308,7 +308,7 @@
 
             tableBody.innerHTML = html;
             statusBox.className = 'import-status status-success';
-            statusBox.innerText = `Страхотно! Всички продукти бяха прочетени и подредени перфектно по разновидности! Твоите ръчно редактирани продукти остават защитени.`;
+            statusBox.innerText = `Страхотно! Всички продукти бяха обновени по разновидности! Твоите ръчно редактирани полета остават напълно защитени.`;
             productsBox.style.display = 'block';
         }
 
@@ -324,9 +324,9 @@
 
             // Запазваме в постоянната памет на браузъра
             localStorage.setItem(`custom_edit_${sku}`, JSON.stringify(overrideData));
-            alert(`🔒 Продукт #${sku} е заключен успешно! При следващите импорти неговата снимка и описание няма да бъдат докоснати.`);
+            alert(`🔒 Продукт #${sku} е заключен успешно! Фийдът вече няма да променя снимката и описанието му.`);
             
-            // Динамично обновяваме текущия изглед без презареждане на цялата страница
+            // Динамично обновяваме текущия изглед без презареждане
             globalGroupedData = globalGroupedData.map(group => {
                 group.variations = group.variations.map(v => {
                     if (v.sku === sku) {
@@ -364,7 +364,7 @@
             reader.readAsText(file);
         });
 
-        // ВАРИАНТ Б: ЗАРЕЖДАНЕ ОТ URL АДРЕС
+        // ОБНОВЕН ВАРИАНТ Б: ЗАРЕЖДАНЕ ОТ URL АДРЕС ЧРЕЗ CORS ПРОКСИ
         const runUrlImport = async () => {
             const urlInput = document.getElementById('feedUrlInput').value.trim();
             const statusBox = document.getElementById('importStatusBox');
@@ -372,19 +372,26 @@
 
             statusBox.style.display = 'block';
             statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Изтегляне на фийда от сървъра и филтриране през защитната база...';
+            statusBox.innerText = '⏳ Изтегляне на фийда и синхронизиране през защитената база (през CORS Proxy)...';
 
             try {
-                // Използваме прокси за избягване на CORS проблеми при тестване
-                const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(urlInput);
+                // Използваме стабилно публично прокси за заобикаляне на CORS ограниченията
+                const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(urlInput);
+                
                 const response = await fetch(proxyUrl);
-                const textData = await response.text();
+                if (!response.ok) throw new Error("Прокси сървърът отказа връзка.");
+                
+                const jsonResult = await response.json();
+                const textData = jsonResult.contents; // Вземаме чистия XML от пакетния отговор
+
                 const groupedCatalog = parseXmlAndGroupProducts(textData);
                 displayGroupedCatalog(groupedCatalog);
                 secondsLeft = 3600; // Рестартираме таймера
             } catch (error) {
+                console.error(error);
                 statusBox.className = 'import-status status-error';
-                statusBox.innerHTML = `❌ Грешка при връзката. Моля, използвай синия Вариант А горе за директно локално зареждане на XML файла.`;
+                statusBox.innerHTML = `❌ Грешка при връзката: Външният сървър отказва директна синхронизация.<br>
+                <small style="font-weight:normal;">Ако публичното прокси е претоварено в момента, моля използвай <b>Вариант А</b> горе за ръчно качване на файла.</small>`;
             }
         };
 
