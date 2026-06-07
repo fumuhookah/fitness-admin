@@ -108,18 +108,26 @@
 
         <div id="view-import" class="admin-view">
             <h2>📥 Модул: Външен Feed Импорт (Режим: Fitness1 XML)</h2>
-            <p style="color: #666; font-size: 14px;">Постави твоя XML Feed линк по-долу, за да изтеглиш и налееш продуктите директно в системата.</p>
+            <p style="color: #666; font-size: 14px;">Изберете локален XML файл или въведете линк, за да заредите продуктовата база данни.</p>
             
             <div class="panel-box">
+                <div class="row" style="margin-bottom: 20px; background: #eef2f7; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; display: block;">
+                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А (Препоръчителен): Избери XML файл от компютъра</label>
+                    <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">Заобикаля всички CORS защити на браузъра и чете големи файлове моментално!</p>
+                    <input type="file" id="feedFileInput" accept=".xml" style="font-size: 13px; padding: 5px; background: white; border: 1px dashed #999; width: 100%; box-sizing: border-box;">
+                </div>
+
+                <div style="text-align: center; font-weight: bold; color: #888; margin: 15px 0; font-size: 12px;">— ИЛИ —</div>
+
                 <div class="row" style="display: flex; gap: 15px; align-items: flex-end;">
                     <div style="display: flex; flex-direction: column; flex: 1;">
-                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Твоят XML Feed URL адрес:</label>
-                        <input type="text" id="feedUrlInput" placeholder="Въведи линка към твоя XML файл тук..." style="width: 100%; box-sizing: border-box;">
+                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Вариант Б: Зареждане чрез XML URL адрес:</label>
+                        <input type="text" id="feedUrlInput" placeholder="Постави линка към XML файла тук..." style="width: 100%; box-sizing: border-box;">
                     </div>
                     <button class="btn-blue" id="btnRunImport" style="background-color: #28a745; height: 35px;">Стартирай Импорт</button>
                 </div>
                 
-                <small style="color: #777;">💡 <i>Ако полето е празно, системата ще генерира демонстрационен продукт базиран на твоята структура (6PAK Shaker)!</i></small>
+                <small style="color: #777; display: block; margin-top: 10px;">💡 <i>Ако не изберете файл и оставите URL полето празно, системата ще пусне демонстрационния импорт.</i></small>
                 
                 <div id="importStatusBox" class="import-status"></div>
             </div>
@@ -128,7 +136,7 @@
                 <h3>Налети продукти в реално време:</h3>
                 <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
                     <table class="products-table" id="importedProductsTable">
-                        <thead style="position: sticky; top: 0; background: #f8f9fa;">
+                        <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 10;">
                             <tr>
                                 <th>ID код</th>
                                 <th>Марка</th>
@@ -163,89 +171,60 @@
             viewImport.classList.add('active'); viewOrders.classList.remove('active');
         });
 
-        // ПАРСВАНЕ НА FITNESS1 XML ФИЙД
-        document.getElementById('btnRunImport').addEventListener('click', async () => {
-            const urlInput = document.getElementById('feedUrlInput').value.trim();
+        // ФУНКЦИЯ ЗА ПАРСВАНЕ И ОБРАБОТКА НА XML ТЕКСТА
+        function parseXmlAndGetProducts(textData) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(textData, "text/xml");
+            
+            // Търсим таговете за име на продукта от твоята структура
+            const productElements = xmlDoc.getElementsByTagName("product_name");
+            
+            if(productElements.length === 0) {
+                throw new Error("Файлът беше прочетен, но вътре липсват продуктови тагове (<product_name>).");
+            }
+
+            let productsData = [];
+            // Зареждаме до първите 500 продукта, за да работи таблицата бързо
+            const limit = Math.min(productElements.length, 500);
+
+            for (let i = 0; i < limit; i++) {
+                const parent = productElements[i].parentNode;
+                
+                const id = parent.getElementsByTagName("id")[0]?.textContent || "N/A";
+                const brand = parent.getElementsByTagName("brand_name")[0]?.textContent || "Няма марка";
+                const pName = productElements[i].textContent;
+                const pack = parent.getElementsByTagName("pack")[0]?.textContent || "";
+                const fullName = pack ? `${pName} (${pack})` : pName;
+                
+                const regPrice = parent.getElementsByTagName("regular_price")[0]?.textContent || "0.00";
+                const salePrice = parent.getElementsByTagName("sale_price")[0]?.textContent || "0.00";
+                const currency = parent.getElementsByTagName("currency")[0]?.textContent || "EUR";
+                
+                let finalPrice = `${regPrice} ${currency}`;
+                if (parseFloat(salePrice) > 0) {
+                    finalPrice = `<span style="color:red; font-weight:bold;">${salePrice} ${currency}</span> <del style="color:#777; font-size:11px;">${regPrice}</del>`;
+                }
+
+                const available = parent.getElementsByTagName("available")[0]?.textContent || "0";
+                const stockStatus = available === "1" ? "В наличност" : "Изчерпан";
+
+                productsData.push({
+                    sku: id,
+                    brand: brand,
+                    name: fullName,
+                    price: finalPrice,
+                    stock: stockStatus
+                });
+            }
+            return productsData;
+        }
+
+        // ФУНКЦИЯ ЗА ПРИНТИРАНЕ НА ТАБЛИЦАТА
+        function displayProducts(productsData) {
             const statusBox = document.getElementById('importStatusBox');
             const productsBox = document.getElementById('importedProductsBox');
             const tableBody = document.querySelector('#importedProductsTable tbody');
-            
-            statusBox.style.display = 'block';
-            statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Роботът преминава през CORS прокси тунел и чете XML фийда... Моля изчакайте, файлът е голям.';
-            productsBox.style.display = 'none';
-            tableBody.innerHTML = '';
 
-            let productsData = [];
-
-            if (urlInput === "") {
-                // Демо данни
-                productsData = [{
-                    sku: "94803",
-                    brand: "6PAK Nutrition",
-                    name: "6PAK Shaker Pattern (600 мл)",
-                    price: "4.95 EUR",
-                    stock: "В наличност"
-                }];
-            } else {
-                try {
-                    // ИЗПОЛЗВАМЕ БЕЗПЛАТЕН CORS ПРОКСИ ТУНЕЛ, ЗА ДА ЗАОБИКОЛИМ ЗАЩИТАТА НА БРАУЗЪРА
-                    const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(urlInput);
-                    
-                    const response = await fetch(proxyUrl);
-                    if (!response.ok) throw new Error("Грешка при изтегляне на данните през прокси сървъра.");
-                    
-                    const textData = await response.text();
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(textData, "text/xml");
-                    
-                    // Търсим таговете за име на продукта
-                    const productElements = xmlDoc.getElementsByTagName("product_name");
-                    
-                    if(productElements.length === 0) {
-                        throw new Error("Файлът беше прочетен, но вътре липсват продуктови тагове (<product_name>).");
-                    }
-
-                    // Ограничаваме импорта до първите 200 продукта, за да не забие браузъра при рендериране на таблицата
-                    const limit = Math.min(productElements.length, 200);
-
-                    for (let i = 0; i < limit; i++) {
-                        const parent = productElements[i].parentNode;
-                        
-                        const id = parent.getElementsByTagName("id")[0]?.textContent || "N/A";
-                        const brand = parent.getElementsByTagName("brand_name")[0]?.textContent || "Няма марка";
-                        const pName = productElements[i].textContent;
-                        const pack = parent.getElementsByTagName("pack")[0]?.textContent || "";
-                        const fullName = pack ? `${pName} (${pack})` : pName;
-                        
-                        const regPrice = parent.getElementsByTagName("regular_price")[0]?.textContent || "0.00";
-                        const salePrice = parent.getElementsByTagName("sale_price")[0]?.textContent || "0.00";
-                        const currency = parent.getElementsByTagName("currency")[0]?.textContent || "EUR";
-                        
-                        let finalPrice = `${regPrice} ${currency}`;
-                        if (parseFloat(salePrice) > 0) {
-                            finalPrice = `<span style="color:red; font-weight:bold;">${salePrice} ${currency}</span> <del style="color:#777; font-size:11px;">${regPrice}</del>`;
-                        }
-
-                        const available = parent.getElementsByTagName("available")[0]?.textContent || "0";
-                        const stockStatus = available === "1" ? "В наличност" : "Изчерпан";
-
-                        productsData.push({
-                            sku: id,
-                            brand: brand,
-                            name: fullName,
-                            price: finalPrice,
-                            stock: stockStatus
-                        });
-                    }
-                } catch (error) {
-                    statusBox.className = 'import-status status-error';
-                    statusBox.innerHTML = `❌ <b>Грешка при импорт:</b> ${error.message}<br><small>Увери се, че линкът е правилен.</small>`;
-                    return;
-                }
-            }
-
-            // Изваждане на продуктите на екрана
             let rowsHtml = "";
             productsData.forEach(prod => {
                 rowsHtml += `<tr>
@@ -256,11 +235,78 @@
                     <td><span style="background:${prod.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${prod.stock === 'В наличност' ? '#2e7d32' : '#c62828'}; padding:3px 6px; font-size:11px; border-radius:3px; font-weight:bold;">${prod.stock}</span></td>
                 </tr>`;
             });
+            
             tableBody.innerHTML = rowsHtml;
-
             statusBox.className = 'import-status status-success';
-            statusBox.innerText = `✅ Успех! Фийдът беше прочетен успешно през CORS прокси. Визуализирани първите ${productsData.length} продукта.`;
+            statusBox.innerText = `✅ Успех! Файлът е обработен. Налети продукти в панела: ${productsData.length}`;
             productsBox.style.display = 'block';
+        }
+
+        // МЕТОД А: СЛУШАТЕЛ ЗА ПРИКАЧЕН ФАЙЛ
+        document.getElementById('feedFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const statusBox = document.getElementById('importStatusBox');
+            const productsBox = document.getElementById('importedProductsBox');
+            
+            statusBox.style.display = 'block';
+            statusBox.className = 'import-status status-loading';
+            statusBox.innerText = '⏳ Четем XML файла локално... Моля изчакайте малко, тъй като файлът съдържа много данни.';
+            productsBox.style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const parsedProducts = parseXmlAndGetProducts(evt.target.result);
+                    displayProducts(parsedProducts);
+                } catch (error) {
+                    statusBox.className = 'import-status status-error';
+                    statusBox.innerHTML = `❌ <b>Грешка при обработка на файла:</b> ${error.message}`;
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // МЕТОД Б: СЛУШАТЕЛ ЗА БУТОНА С URL ЛИНК
+        document.getElementById('btnRunImport').addEventListener('click', async () => {
+            const urlInput = document.getElementById('feedUrlInput').value.trim();
+            const statusBox = document.getElementById('importStatusBox');
+            const productsBox = document.getElementById('importedProductsBox');
+            const tableBody = document.querySelector('#importedProductsTable tbody');
+            
+            statusBox.style.display = 'block';
+            statusBox.className = 'import-status status-loading';
+            statusBox.innerText = '⏳ Опит за изтегляне през коригиран CORS прокси тунел...';
+            productsBox.style.display = 'none';
+            tableBody.innerHTML = '';
+
+            if (urlInput === "") {
+                // Демо симулация
+                const demoData = [{
+                    sku: "94803",
+                    brand: "6PAK Nutrition",
+                    name: "6PAK Shaker Pattern (600 мл)",
+                    price: "4.95 EUR",
+                    stock: "В наличност"
+                }];
+                displayProducts(demoData);
+            } else {
+                try {
+                    // Коригиран синтаксис за проксито с параметър ?url=
+                    const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(urlInput);
+                    
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error("Прокси сървърът отказа заявката или файлът е прекалено голям за безплатен тунел.");
+                    
+                    const textData = await response.text();
+                    const parsedProducts = parseXmlAndGetProducts(textData);
+                    displayProducts(parsedProducts);
+                } catch (error) {
+                    statusBox.className = 'import-status status-error';
+                    statusBox.innerHTML = `❌ <b>Грешка при импорт:</b> Външната връзка е блокирана от сървъра.<br><small>💡 <b>Използвай синия Вариант А по-горе!</b> Изтегли файла на компютъра си и го прикачи оттам – работи безотказно за 1 секунда!</small>`;
+                }
+            }
         });
     </script>
 </body>
