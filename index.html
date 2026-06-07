@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ Панел - Fitness1</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; display: flex; color: #333; }
+        
+        /* ЛЯВО МЕНЮ (SIDEBAR) */
+        .sidebar { width: 260px; background-color: #f8f9fa; border-right: 1px solid #dee2e6; height: 100vh; overflow-y: auto; position: fixed; }
+        .sidebar-header { background-color: #1a1a1a; color: white; padding: 15px; font-weight: bold; font-size: 16px; text-align: center; }
+        .menu-list { list-style: none; padding: 0; margin: 0; }
+        .menu-item { padding: 10px 15px; border-bottom: 1px solid #e9ecef; font-size: 13px; font-weight: bold; color: #495057; cursor: pointer; }
+        .menu-item:hover { background-color: #e9ecef; }
+        .menu-item.active { background-color: #1a1a1a; color: white; border-left: 4px solid #007bff; }
+        .submenu { background-color: #f1f3f5; padding-left: 15px; }
+        .submenu .menu-item { font-weight: normal; font-size: 12px; }
+
+        /* ОСНОВНО СЪДЪРЖАНИЕ */
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; box-sizing: border-box; min-height: 100vh; }
+        
+        /* ФИЛТРИ */
+        .filter-section { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
+        .input-group { display: flex; flex-direction: column; font-size: 11px; color: #666; }
+        input[type="text"], input[type="date"], select { padding: 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
+        .btn-search { background-color: #007bff; color: white; border: none; padding: 7px 15px; border-radius: 3px; cursor: pointer; font-weight: bold; }
+        .radio-group { font-size: 13px; font-weight: bold; }
+        .radio-group label { font-weight: normal; margin-right: 10px; cursor: pointer; }
+        
+        /* ТАБОВЕ */
+        .tabs-container { display: flex; gap: 5px; margin-top: 15px; border-bottom: 2px solid #ddd; padding-bottom: 1px; }
+        .tab { padding: 8px 15px; font-size: 12px; font-weight: bold; border: 1px solid #ddd; border-bottom: none; background: #e9ecef; border-radius: 4px 4px 0 0; cursor: pointer; }
+        .tab.active { background: white; border-top: 3px solid #6c757d; color: black; margin-bottom: -2px; padding-bottom: 9px; }
+
+        /* СПИСЪК С ПОРЪЧКИ */
+        .order-card { display: flex; background: white; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .order-client { width: 25%; padding: 15px; background-color: #fdfdfd; border-right: 1px solid #dee2e6; font-size: 13px; line-height: 1.5; }
+        .order-products { width: 60%; padding: 15px; }
+        .order-actions { width: 15%; padding: 15px; background: #f8f9fa; border-left: 1px solid #dee2e6; text-align: center; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+        
+        /* ТАБЛИЦА ПРОДУКТИ */
+        .products-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .products-table th { background: #f8f9fa; text-align: left; padding: 8px; font-size: 11px; color: #666; border-bottom: 1px solid #dee2e6; }
+        .products-table td { padding: 10px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+        
+        /* СТИЛОВЕ ЗА СТАТУСИ И ЕТИКЕТИ */
+        .badge { padding: 2px 6px; font-size: 10px; font-weight: bold; color: white; border-radius: 3px; display: inline-block; }
+        .badge-b2b { background-color: #0056b3; }
+        .badge-pharma { background-color: #28a745; }
+        .status-confirmed { background-color: #28a745; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 3px; display: inline-block; }
+        
+        .action-btn { padding: 6px; background: white; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; width: 100%; }
+        .action-btn:hover { background: #f1f1f1; }
+    </style>
+</head>
+<body>
+
+    <!-- ЛЯВОТО СТРАНИЧНО МЕНЮ -->
+    <div class="sidebar">
+        <div class="sidebar-header">Админ панел</div>
+        <ul class="menu-list">
+            <li class="menu-item">Начало</li>
+            <li class="menu-item active">Поръчки</li>
+            <li class="menu-item">Поръчки | B2B</li>
+            <li class="menu-item">Поръчки | Pharma</li>
+            <li class="menu-item">Категории</li>
+            <li class="menu-item">Купони</li>
+            <li class="menu-item">Марки</li>
+            <li class="menu-item">Продукти</li>
+            <li class="menu-item">Разфасовки</li>
+            <li class="menu-item">Вкусове</li>
+            <li class="menu-item" style="background: #e9ecef;">Фактури ▾</li>
+            <div class="submenu">
+                <li class="menu-item">Издадени</li>
+                <li class="menu-item">Фирми</li>
+            </div>
+            <li class="menu-item">Потребители</li>
+        </ul>
+    </div>
+
+    <!-- ДЯСНАТА ЧАСТ -->
+    <div class="main-content">
+        
+        <!-- СЕКЦИЯ ФИЛТРИ -->
+        <div class="filter-section">
+            <div class="row">
+                <!-- ДОБАВИХМЕ ID ЗА ТЪРСЕНЕ -->
+                <input type="text" id="searchInput" placeholder="Напиши име, телефон или град..." style="width: 250px;">
+                <div class="input-group"><span>От дата</span><input type="date"></div>
+                <div class="input-group"><span>До дата</span><input type="date"></div>
+                <input type="text" placeholder="Град" style="width: 120px;">
+                <select><option>- Държава -</option><option>България</option></select>
+            </div>
+            <div class="row">
+                <select><option>- Избери марка -</option></select>
+                <select><option>- Всички статуси -</option></select>
+                <button class="btn-search">Търси</button>
+            </div>
+            <div class="row radio-group">
+                <span>Търси по:</span>
+                <label><input type="radio" name="search_type" checked> Всичко</label>
+                <label><input type="radio" name="search_type"> #ID</label>
+                <label><input type="radio" name="search_type"> Име</label>
+                <label><input type="radio" name="search_type"> Телефон</label>
+            </div>
+            <div class="tabs-container">
+                <div class="tab active" data-filter="all">Всички Днес (2)</div>
+                <div class="tab" data-filter="B2B">B2B (1)</div>
+                <div class="tab" data-filter="Pharma">Pharma (1)</div>
+            </div>
+        </div>
+        
+        <!-- СПИСЪК С ПОРЪЧКИТЕ -->
+        <div class="orders-list">
+            
+            <!-- ПОРЪЧКА 1: Кристиян -->
+            <div class="order-card" data-type="B2B">
+                <div class="order-client">
+                    <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
+                        RAP <span class="order-id">#2090049</span> &nbsp;
+                        <span class="badge badge-b2b">B2B</span>
+                    </div>
+                    <div class="client-name" style="font-size: 15px; font-weight: bold; margin-bottom: 8px;">Кристиян Климентов</div>
+                    <div style="margin-bottom: 10px;"><span class="status-confirmed">ПОТВЪРДЕНА</span></div>
+                    <div class="client-phone">📞 0884684777</div>
+                    <div style="word-break: break-all;">✉️ distribution@fitness1.bg</div>
+                    <div style="margin-top: 8px;">📍 <b>гр. Камено, обл. Бургас</b><br><span style="color:#555;">гр. Камено, ул. Витоша 10</span></div>
+                </div>
+                
+                <div class="order-products">
+                    <table class="products-table">
+                        <thead>
+                            <tr><th>Продукт</th><th style="width: 80px;">Цена</th><th style="width: 100px;">Промо</th><th style="width: 80px;">Намаление</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>2 x</strong> 6PAK Nutrition<br><span style="color: #0056b3; font-weight: bold;">Shaker Milky Whey Shake - Purple</span></td>
+                                <td>5.09 €</td><td style="color: red; font-weight: bold;">3.05 €</td><td style="color: green;">[40%]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align: right; margin-top: 15px; font-size: 14px; font-weight: bold;">Общо: 66.66 €</div>
+                </div>
+                
+                <div class="order-actions">
+                    <button class="action-btn" onclick="alert('Редакция на поръчка #2090049')">✏️ Редакция</button>
+                </div>
+            </div>
+
+            <!-- ПОРЪЧКА 2: Георги -->
+            <div class="order-card" data-type="Pharma">
+                <div class="order-client">
+                    <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
+                        RAP <span class="order-id">#2090037</span> &nbsp;
+                        <span class="badge badge-pharma">Pharma</span>
+                    </div>
+                    <div class="client-name" style="font-size: 15px; font-weight: bold; margin-bottom: 8px;">Георги Семов</div>
+                    <div style="margin-bottom: 10px;"><span class="status-confirmed">ПОТВЪРДЕНА</span></div>
+                    <div class="client-phone">📞 0877009533</div>
+                    <div>✉️ jorosemov@gmail.com</div>
+                    <div style="margin-top: 8px;">📍 <b>гр. София, обл. София</b><br><span style="color:#555;">жк. Гео Милев, бл. 9</span></div>
+                </div>
+                
+                <div class="order-products">
+                    <table class="products-table">
+                        <thead>
+                            <tr><th>Продукт</th><th style="width: 80px;">Цена</th><th style="width: 100px;">Промо</th><th style="width: 80px;">Намаление</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1 x</strong> Doctor's Best<br><span style="color: #0056b3; font-weight: bold;">BEST Nattokinase 2,000 FUs</span></td>
+                                <td>71.56 €</td><td style="color: red; font-weight: bold;">62.97 €</td><td style="color: green;">[12%]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align: right; margin-top: 15px; font-size: 14px; font-weight: bold;">Общо: 62.97 €</div>
+                </div>
+                
+                <div class="order-actions">
+                    <button class="action-btn" onclick="alert('Редакция на поръчка #2090037')">✏️ Редакция</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ТУК Е МАГИЯТА: JAVASCRIPT ЛОГИКА ЗА ТЪРСЕНЕ И ТАБОВЕ -->
+    <script>
+        // 1. Логика за интерактивно търсене в реално време
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const orderCards = document.querySelectorAll('.order-card');
+            
+            orderCards.forEach(card => {
+                const clientText = card.querySelector('.order-client').innerText.toLowerCase();
+                if (clientText.includes(searchText)) {
+                    card.style.display = 'flex'; // Показва поръчката
+                } else {
+                    card.style.display = 'none'; // Скрива я
+                }
+            });
+        });
+
+        // 2. Логика за превключване на табовете (Всички, B2B, Pharma)
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Премахни активния клас от стария таб и го сложи на новия
+                document.querySelector('.tab.active').classList.remove('active');
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                const orderCards = document.querySelectorAll('.order-card');
+                
+                orderCards.forEach(card => {
+                    if (filterValue === 'all' || card.getAttribute('data-type') === filterValue) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
