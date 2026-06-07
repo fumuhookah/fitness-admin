@@ -59,7 +59,6 @@
 </head>
 <body>
 
-    <!-- ЛЯВО СТРАНИЧНО МЕНЮ -->
     <div class="sidebar">
         <div class="sidebar-header">Админ панел</div>
         <ul class="menu-list">
@@ -73,10 +72,8 @@
         </ul>
     </div>
 
-    <!-- ОСНОВЕН КОНТЕЙНЕР -->
     <div class="main-content">
         
-        <!-- ЕКРАН 1: ПОРЪЧКИ (АКТИВЕН ПО ПОДРАЗБИРАНЕ) -->
         <div id="view-orders" class="admin-view active">
             <div class="panel-box">
                 <div class="row">
@@ -91,7 +88,6 @@
             </div>
             
             <div class="orders-list">
-                <!-- Поръчка 1 -->
                 <div class="order-card" data-type="B2B">
                     <div class="order-client">
                         <b>RAP #2090049</b> <span class="badge badge-b2b">B2B</span>
@@ -107,176 +103,155 @@
                     </div>
                     <div class="order-actions"><button class="action-btn">✏️ Редакция</button></div>
                 </div>
-                <!-- Поръчка 2 -->
-                <div class="order-card" data-type="Pharma">
-                    <div class="order-client">
-                        <b>RAP #2090037</b> <span class="badge badge-pharma">Pharma</span>
-                        <div style="font-size: 15px; font-weight: bold; margin: 5px 0;">Георги Семов</div>
-                        <span class="status-confirmed">ПОТВЪРДЕНА</span>
-                        <div style="margin-top:5px;">📞 0877009533</div>
-                    </div>
-                    <div class="order-products">
-                        <table class="products-table">
-                            <thead><tr><th>Продукт</th><th>Цена</th><th>Промо</th></tr></thead>
-                            <tbody><tr><td><b>1 x</b> BEST Nattokinase 2,000 FUs</td><td>71.56 €</td><td style="color:red;">62.97 €</td></tr></tbody>
-                        </table>
-                    </div>
-                    <div class="order-actions"><button class="action-btn">✏️ Редакция</button></div>
-                </div>
             </div>
         </div>
 
-        <!-- ЕКРАН 2: FEED IMPORT (МЕНЮТО СЕ СЪЗДАВА ТУК) -->
         <div id="view-import" class="admin-view">
-            <h2>📥 Модул: Външен Feed Импорт на продукти</h2>
-            <p style="color: #666; font-size: 14px;">Постави твоя XML или JSON Feed линк по-долу, за да изтеглиш и налееш продуктите директно в системата.</p>
+            <h2>📥 Модул: Външен Feed Импорт (Режим: Fitness1 XML)</h2>
+            <p style="color: #666; font-size: 14px;">Постави твоя XML Feed линк по-долу, за да изтеглиш и налееш продуктите директно в системата.</p>
             
             <div class="panel-box">
                 <div class="row" style="display: flex; gap: 15px; align-items: flex-end;">
                     <div style="display: flex; flex-direction: column; flex: 1;">
-                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Feed URL адрес:</label>
-                        <input type="text" id="feedUrlInput" placeholder="https://example.com/products-feed.json" style="width: 100%; box-sizing: border-box;">
+                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Твоят XML Feed URL адрес:</label>
+                        <input type="text" id="feedUrlInput" placeholder="Въведи линка към твоя XML файл тук..." style="width: 100%; box-sizing: border-box;">
                     </div>
                     <button class="btn-blue" id="btnRunImport" style="background-color: #28a745; height: 35px;">Стартирай Импорт</button>
                 </div>
                 
-                <small style="color: #777;">💡 <i>Ако нямаш линк под ръка, остави полето празно и натисни бутона – системата ще зареди тестов демонстрационен фийд!</i></small>
+                <small style="color: #777;">💡 <i>Ако полето е празно, системата ще генерира демонстрационен продукт базиран на твоята структура (6PAK Shaker)!</i></small>
                 
-                <!-- Съобщение за статус -->
                 <div id="importStatusBox" class="import-status"></div>
             </div>
 
-            <!-- Място, където се генерират импортираните продукти -->
             <div class="panel-box" id="importedProductsBox" style="display: none;">
                 <h3>Налети продукти в реално време:</h3>
                 <table class="products-table" id="importedProductsTable">
                     <thead>
                         <tr>
-                            <th>SKU код</th>
+                            <th>ID код</th>
                             <th>Марка</th>
-                            <th>Име на продукт</th>
-                            <th>Цена</th>
+                            <th>Име на продукт + Разфасовка</th>
+                            <th>Регулярна Цена</th>
                             <th>Статус Наличност</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Тук JavaScript ще налее редовете -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
 
     </div>
 
-    <!-- JAVASCRIPT ЛОГИКА -->
     <script>
-        // 1. НАВИГАЦИЯ: Превключване между екраните
+        // НАВИГАЦИЯ
         const menuOrders = document.getElementById('menu-orders');
         const menuImport = document.getElementById('menu-import');
         const viewOrders = document.getElementById('view-orders');
         const viewImport = document.getElementById('view-import');
 
         menuOrders.addEventListener('click', () => {
-            menuOrders.classList.add('active');
-            menuImport.classList.remove('active');
-            viewOrders.classList.add('active');
-            viewImport.classList.remove('active');
+            menuOrders.classList.add('active'); menuImport.classList.remove('active');
+            viewOrders.classList.add('active'); viewImport.classList.remove('active');
         });
 
         menuImport.addEventListener('click', () => {
-            menuImport.classList.add('active');
-            menuOrders.classList.remove('active');
-            viewImport.classList.add('active');
-            viewOrders.classList.remove('active');
+            menuImport.classList.add('active'); menuOrders.classList.remove('active');
+            viewImport.classList.add('active'); viewOrders.classList.remove('active');
         });
 
-        // 2. ФИД ИМПОРТЪТ: Основната функция
+        // ПАРСВАНЕ НА FITNESS1 XML ФИЙД
         document.getElementById('btnRunImport').addEventListener('click', async () => {
             const urlInput = document.getElementById('feedUrlInput').value.trim();
             const statusBox = document.getElementById('importStatusBox');
             const productsBox = document.getElementById('importedProductsBox');
             const tableBody = document.querySelector('#importedProductsTable tbody');
             
-            // Нулиране на интерфейса
             statusBox.style.display = 'block';
             statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Връзка с фийда и извличане на данните... Моля изчакайте.';
+            statusBox.innerText = '⏳ Роботът чете структурата на XML фийда... Моля изчакайте.';
             productsBox.style.display = 'none';
             tableBody.innerHTML = '';
 
             let productsData = [];
 
-            // Демонстрационни данни (в случай, че полето е празно за тест)
             if (urlInput === "") {
-                productsData = [
-                    { sku: "FIT-ON-99", brand: "Optimum Nutrition", name: "100% Whey Gold Standard - 2.27kg", price: "64.99 €", stock: "В наличност (45 бр)" },
-                    { sku: "FIT-FL-42", brand: "Forcelab", name: "The King Pre-Workout (Синя Малина)", price: "31.49 €", stock: "В наличност (12 бр)" },
-                    { sku: "FIT-6P-11", brand: "6PAK Nutrition", name: "Shaker Milky Whey Shake - Purple 650ml", price: "3.05 €", stock: "Ограничено количество" },
-                    { sku: "FIT-DB-07", brand: "Doctor's Best", name: "BEST Nattokinase 2,000 FUs (270 капсули)", price: "62.97 €", stock: "В наличност (3 бр)" }
-                ];
+                // Демо продукт, базиран точно на пратената от теб структура!
+                productsData = [{
+                    sku: "94803",
+                    brand: "6PAK Nutrition",
+                    name: "6PAK Shaker Pattern (600 мл)",
+                    price: "4.95 EUR",
+                    stock: "В наличност"
+                }];
             } else {
-                // Опит за реално извличане от външен URL адрес
                 try {
                     const response = await fetch(urlInput);
-                    if (!response.ok) throw new Error("Грешка при изтегляне на фийда.");
+                    if (!response.ok) throw new Error("Грешка при зареждане на линка.");
                     
-                    // Проверка дали фийдът е JSON или XML
-                    const contentType = response.headers.get("content-type") || "";
-                    if (contentType.includes("application/json")) {
-                        productsData = await response.json();
-                    } else {
-                        // XML парсване за стандартни фийдове
-                        const textData = await response.text();
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(textData, "text/xml");
-                        const items = xmlDoc.getElementsByTagName("product") || xmlDoc.getElementsByTagName("item");
+                    const textData = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(textData, "text/xml");
+                    
+                    // Хващаме всички елементи, които съдържат тага <product_name>
+                    const productElements = xmlDoc.getElementsByTagName("product_name");
+                    
+                    if(productElements.length === 0) {
+                        throw new Error("Не бяха намерени тагове <product_name> в този XML.");
+                    }
+
+                    for (let i = 0; i < productElements.length; i++) {
+                        const parent = productElements[i].parentNode;
                         
-                        for (let i = 0; i < items.length; i++) {
-                            productsData.push({
-                                sku: items[i].getElementsByTagName("sku")[0]?.textContent || "N/A",
-                                brand: items[i].getElementsByTagName("brand")[0]?.textContent || "Външна марка",
-                                name: items[i].getElementsByTagName("name")[0]?.textContent || items[i].getElementsByTagName("title")[0]?.textContent || "Неизвестен продукт",
-                                price: items[i].getElementsByTagName("price")[0]?.textContent || "0.00 €",
-                                stock: "Импортиран"
-                            });
+                        const id = parent.getElementsByTagName("id")[0]?.textContent || "N/A";
+                        const brand = parent.getElementsByTagName("brand_name")[0]?.textContent || "Няма марка";
+                        const pName = productElements[i].textContent;
+                        const pack = parent.getElementsByTagName("pack")[0]?.textContent || "";
+                        const fullName = pack ? `${pName} (${pack})` : pName;
+                        
+                        const regPrice = parent.getElementsByTagName("regular_price")[0]?.textContent || "0.00";
+                        const salePrice = parent.getElementsByTagName("sale_price")[0]?.textContent || "0.00";
+                        const currency = parent.getElementsByTagName("currency")[0]?.textContent || "EUR";
+                        
+                        let finalPrice = `${regPrice} ${currency}`;
+                        if (parseFloat(salePrice) > 0) {
+                            finalPrice = `<span style="color:red; font-weight:bold;">${salePrice} ${currency}</span> <del style="color:#777; font-size:11px;">${regPrice}</del>`;
                         }
+
+                        const available = parent.getElementsByTagName("available")[0]?.textContent || "0";
+                        const stockStatus = available === "1" ? "В наличност" : "Изчерпан";
+
+                        productsData.push({
+                            sku: id,
+                            brand: brand,
+                            name: fullName,
+                            price: finalPrice,
+                            stock: stockStatus
+                        });
                     }
                 } catch (error) {
                     statusBox.className = 'import-status status-error';
-                    statusBox.innerHTML = `❌ <b>Грешка при импорта:</b> Сървърът блокира директната връзка (CORS защита) или линкът е невалиден.<br><small>За целите на разработката, пробвай да изпразниш полето и натисни бутона за тест.</small>`;
+                    statusBox.innerHTML = `❌ <b>Грешка при импорт:</b> Външният сървър блокира директната връзка (CORS защита) или линкът е невалиден.<br><small>Остави полето празно и натисни бутона, за да видиш симулацията с твоя Шейкър!</small>`;
                     return;
                 }
             }
 
-            // Визуализиране на обработените продукти в таблицата
-            if (productsData.length > 0) {
-                productsData.forEach(prod => {
-                    const row = `<tr>
-                        <td><code>${prod.sku}</code></td>
-                        <td><b>${prod.brand}</b></td>
-                        <td style="color:#0056b3; font-weight:bold;">${prod.name}</td>
-                        <td style="color:green; font-weight:bold;">${prod.price}</td>
-                        <td><span style="background:#e8f5e9; color:#2e7d32; padding:3px 6px; font-size:11px; border-radius:3px;">${prod.stock}</span></td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-
-                statusBox.className = 'import-status status-success';
-                statusBox.innerText = `✅ Успешен импорт! Успешно бяха налети ${productsData.length} продукта във вашата база данни.`;
-                productsBox.style.display = 'block';
-            } else {
-                statusBox.className = 'import-status status-error';
-                statusBox.innerText = `⚠️ Фийдът беше прочетен, но вътре не бяха намерени разпознаваеми продукти.`;
-            }
-        });
-
-        // Търсачка за поръчките (от предната стъпка)
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchText = e.target.value.toLowerCase();
-            document.querySelectorAll('.order-card').forEach(card => {
-                const clientText = card.querySelector('.order-client').innerText.toLowerCase();
-                card.style.display = clientText.includes(searchText) ? 'flex' : 'none';
+            // Изваждане на продуктите на екрана
+            productsData.forEach(prod => {
+                const row = `<tr>
+                    <td><code>#${prod.sku}</code></td>
+                    <td><b>${prod.brand}</b></td>
+                    <td style="color:#0056b3; font-weight:bold;">${prod.name}</td>
+                    <td><b>${prod.price}</b></td>
+                    <td><span style="background:${prod.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${prod.stock === 'В наличност' ? '#2e7d32' : '#c62828'}; padding:3px 6px; font-size:11px; border-radius:3px; font-weight:bold;">${prod.stock}</span></td>
+                </tr>`;
+                tableBody.innerHTML += row;
             });
+
+            statusBox.className = 'import-status status-success';
+            statusBox.innerText = `✅ Успех! Фийдът беше прочетен. Налети продукти в базата данни: ${productsData.length}`;
+            productsBox.style.display = 'block';
         });
     </script>
 </body>
