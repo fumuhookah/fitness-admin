@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ Панел - Fitness1 (Защитена Автоматизация)</title>
+    <title>Админ Панел - Fitness1 (Умен Интегриран Импорт)</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; display: flex; color: #333; }
         
@@ -13,7 +13,7 @@
         .menu-list { list-style: none; padding: 0; margin: 0; }
         .menu-item { padding: 10px 15px; border-bottom: 1px solid #e9ecef; font-size: 13px; font-weight: bold; color: #495057; cursor: pointer; }
         .menu-item:hover { background-color: #e9ecef; }
-        .menu-item.active { background-color: #1a1a1a; color: white; border-left: 4px solid #007bff; }
+        .menu-item.active { background-color: #1a1a1a; color: white; border-left: 4px solid #ffc107; }
         
         /* ОСНОВНО СЪДЪРЖАНИЕ */
         .main-content { flex: 1; margin-left: 260px; padding: 20px; box-sizing: border-box; min-height: 100vh; }
@@ -22,9 +22,9 @@
         .panel-box { background: white; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
         input[type="text"], textarea { padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; font-family: inherit; }
-        .btn-green { background-color: #28a745; color: white; border: none; padding: 9px 18px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-green { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-green:hover { background-color: #218838; }
-        .btn-lock { background-color: #ffc107; color: #212529; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; margin-top: 5px; }
+        .btn-lock { background-color: #ffc107; color: #212529; border: none; padding: 6px 12px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; margin-top: 5px; }
         .btn-lock:hover { background-color: #e0a800; }
 
         /* ИМПОРТ СТАТУСИ */
@@ -41,14 +41,15 @@
         .row-parent:hover { background: #f1f3f5; }
         .row-parent td { padding: 12px 8px; border-bottom: 1px solid #dee2e6; font-weight: bold; }
         
-        .row-standalone { background: #ffffff; }
+        .row-standalone { background: #ffffff; cursor: pointer; }
+        .row-standalone:hover { background: #f1f3f5; }
         .row-standalone td { padding: 12px 8px; border-bottom: 1px solid #dee2e6; }
 
         .row-variation { background: #fdfefe; display: none; }
         .row-variation td { padding: 9px 8px; border-bottom: 1px solid #f1f3f5; color: #495057; }
 
         /* ЕДИТОР ФОРМА ВЪТРЕ В РЕДА */
-        .edit-container { background: #f8f9fa; padding: 10px; border: 1px dashed #ffc107; border-radius: 4px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .edit-container { background: #f8f9fa; padding: 12px; border: 1px dashed #ffc107; border-radius: 4px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
 
         /* Значки */
         .badge-count { background: #007bff; color: white; padding: 2px 7px; border-radius: 10px; font-size: 11px; margin-left: 6px; font-weight: bold; }
@@ -64,31 +65,30 @@
         <ul class="menu-list">
             <li class="menu-item">Начало</li>
             <li class="menu-item">Поръчки</li>
-            <li class="menu-item active" style="background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;">📥 Feed Import</li>
+            <li class="menu-item active">📥 Feed Import</li>
             <li class="menu-item">Категории</li>
-            <li class="menu-item">Марки</li>
             <li class="menu-item">Продукти</li>
-            <li class="menu-item">Потребители</li>
         </ul>
     </div>
 
     <div class="main-content">
         
         <div>
-            <h2>📥 Умен Фийд Мениджър със Защита на Ръчните Редакции</h2>
-            <p style="color: #666; font-size: 14px;">Системата се обновява автоматично по линк, но **пази и заключва** твоите авторски описания и снимки от презаписване.</p>
+            <h2>Модул: Свързване на Продукти с Опции (Вкусове/Разфасовки)</h2>
+            <p style="color: #666; font-size: 14px;">Системата автоматично чете релациите във фийда и прибира опциите под общ родителски продукт за чист склад.</p>
             
             <div class="panel-box">
                 <div class="row" style="margin-bottom: 20px; background: #eef2f7; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; display: block;">
-                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А: Зареди ръчно XML файл (За бърз тест)</label>
+                    <label style="font-size: 13px; font-weight: bold; color: #1a1a1a; display: block; margin-bottom: 4px;">🚀 Вариант А (Препоръчителен): Избери XML файл от компютъра</label>
+                    <p style="margin: 0 0 8px 0; font-size: 12px; color: #555;">Заобикаля всички CORS защити на браузъра и чете големи файлове моментално!</p>
                     <input type="file" id="feedFileInput" accept=".xml" style="font-size: 13px; padding: 5px; background: white; border: 1px dashed #999; width: 100%; box-sizing: border-box; cursor: pointer;">
                 </div>
 
-                <div style="text-align: center; font-weight: bold; color: #888; margin: 15px 0; font-size: 12px;">— ИЛИ —</div>
+                <div style="text-align: center; font-weight: bold; color: #888; margin: 15px 0; font-size: 12px;">— или —</div>
 
                 <div class="row" style="display: flex; gap: 15px; align-items: flex-end;">
                     <div style="display: flex; flex-direction: column; flex: 1;">
-                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Вариант Б: Линк за постоянен автоматичен импорт:</label>
+                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Вариант Б: Линк за автоматичен импорт:</label>
                         <input type="text" id="feedUrlInput" placeholder="Постави линка към XML файла тук..." style="width: 100%; box-sizing: border-box;">
                     </div>
                     <button class="btn-green" id="btnRunImport">Стартирай Импорт</button>
@@ -97,17 +97,17 @@
                 <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: flex; align-items: center;">
                     <input type="checkbox" id="chkAutoRefresh" style="cursor: pointer;">
                     <label style="font-size: 13px; font-weight: bold; margin-left: 8px; cursor: pointer;" for="chkAutoRefresh">
-                        🔄 Автоматично фоново обновяване на всеки час без счупване на данните
+                        🔄 Автоматично обновяване на всеки час (Изисква Вариант Б и отворен браузър)
                     </label>
-                    <span id="txtTimer" class="timer-badge" style="display: none;">Следващ синк след: 60:00</span>
+                    <span id="txtTimer" class="timer-badge" style="display: none;">Следващо обновяване след: 59:59</span>
                 </div>
                 
                 <div id="importStatusBox" class="import-status"></div>
             </div>
 
             <div class="panel-box" id="importedProductsBox" style="display: none;">
-                <h3 id="txtTotalProducts">Уникални главни продукти: 0</h3>
-                <p style="font-size: 12px; color: #0056b3; font-weight: bold; margin-top: -10px;">💡 Кликни върху продукт с папка 📁, за да видиш вкусовете му и да редактираш описанието/снимката му.</p>
+                <h3 id="txtTotalProducts">Уникални главни продукти в базата: 0</h3>
+                <p style="font-size: 12px; color: #fabb05; font-weight: bold; margin-top: -10px;">💡 Продуктите с папка 📁 съдържат опции. Кликни върху тях, за да видиш списъка с вкусове и да заключиш описание/снимка.</p>
                 
                 <div style="max-height: 650px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
                     <table class="products-table" id="importedProductsTable">
@@ -116,7 +116,7 @@
                                 <th>Име на продукт</th>
                                 <th>Марка</th>
                                 <th>Конкретна опция (Вкус / Спецификация)</th>
-                                <th>Цена (B2B)</th>
+                                <th>Цена за нас</th>
                                 <th>Наличност</th>
                             </tr>
                         </thead>
@@ -133,16 +133,16 @@
         let autoRefreshInterval = null;
         let countdownInterval = null;
         let secondsLeft = 3600;
-        let globalGroupedData = []; // Пази текущото състояние в паметта
+        let globalGroupedData = []; // Пази текущото състояние в паметта за ре-рендериране
 
-        // ПАРСЕР, КОЙТО СЛИВА ДАННИТЕ И ПРОВЕРЯВА ЗА ЗАКЛЮЧЕНИ РЪЧНИ РЕДАКЦИИ
+        // ПАРСЕР, КОЙТО СЛИВА XML ДАННИТЕ С ТВОИТЕ ЗАКЛЮЧЕНИ РЪЧНИ ПРОМЕНИ
         function parseXmlAndGroupProducts(textData) {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(textData, "text/xml");
             const productElements = xmlDoc.getElementsByTagName("product_name");
             
             if(productElements.length === 0) {
-                throw new Error("Невалидна структура на XML файла.");
+                throw new Error("Невалидна структура на XML файла или липсващи тагове.");
             }
 
             let catalogMap = {};
@@ -174,11 +174,11 @@
                 const available = parentNode.getElementsByTagName("available")[0]?.textContent || "0";
                 const stockStatus = available === "1" ? "В наличност" : "Изчерпан";
 
-                // Търсим дали в XML има базови тагове за описание/снимка (или слагаме дефолтни)
-                let defaultDesc = parentNode.getElementsByTagName("description")[0]?.textContent || "Няма предоставено описание от фийда.";
+                // Вземаме базовите стойности от XML-а (ако съществуват)
+                let defaultDesc = parentNode.getElementsByTagName("description")[0]?.textContent || "Няма въведено описание.";
                 let defaultImg = parentNode.getElementsByTagName("image")[0]?.textContent || "placeholder.jpg";
 
-                // КЛЮЧОВИЯТ МОМЕНТ: Проверяваме локалното хранилище за ръчни промени по този SKU код
+                // 🛡️ КЛЮЧОВА ЗАЩИТА: Проверяваме локалното хранилище на браузъра за този конкретен SKU код
                 let savedOverride = localStorage.getItem(`custom_edit_${id}`);
                 let isManuallyLocked = false;
                 
@@ -186,7 +186,7 @@
                     const parsedData = JSON.parse(savedOverride);
                     defaultDesc = parsedData.customDesc;
                     defaultImg = parsedData.customImg;
-                    isManuallyLocked = true;
+                    isManuallyLocked = true; // Отбелязваме продукта като заключен
                 }
 
                 let mainGroupKey = (parentId && parentId !== "0") ? parentId : id;
@@ -219,7 +219,7 @@
             return Object.values(catalogMap);
         }
 
-        // ПОКАЗВАНЕ НА КАТАЛОГА С ИНЛАЙН РЕДАКТОРИ ПРИ РАЗГЪВАНЕ
+        // ОТПЕЧАТВАНЕ НА КАТАЛОГА В ТАБЛИЦАТА С ФОРМИ ЗА РЕДАКЦИЯ
         function displayGroupedCatalog(groupedData) {
             globalGroupedData = groupedData;
             const statusBox = document.getElementById('importStatusBox');
@@ -235,12 +235,12 @@
                 const groupClassName = `group-id-${index}`;
 
                 if (hasMultipleOptions) {
-                    // А) ПРОДУКТ С МНОГО ОПЦИИ
+                    // А) ПРОДУКТ С МНОГО КУТИИ / ВКУСОВЕ (Групиран)
                     html += `<tr class="row-parent" onclick="toggleVariations('${groupClassName}')">
-                        <td style="color: #1a1a1a;">📁 ${group.productName} <span class="badge-count">${totalVars} вкуса/разфасовки</span></td>
+                        <td style="color: #1a1a1a;">📁 ${group.productName} <span class="badge-count">${totalVars} опции</span></td>
                         <td><b>${group.brand}</b></td>
-                        <td style="color: #666; font-style: italic;">Разнообразни опции (Кликни за преглед и редакция)</td>
-                        <td style="color: #007bff; font-weight: bold;">Виж опции</td>
+                        <td style="color: #666; font-style: italic;">Разнообразни вкусове / размери (Кликни за преглед)</td>
+                        <td style="color: #007bff; font-weight: bold;">Виж опциите</td>
                         <td>—</td>
                     </tr>`;
 
@@ -252,21 +252,19 @@
 
                         html += `<tr class="row-variation ${groupClassName}">
                             <td colspan="5" style="padding-left: 35px; border-left: 4px solid #007bff; background: #fafbfc;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#333;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; margin-bottom:5px;">
                                     <span><code style="background:#e9ecef; padding:2px 5px; border-radius:3px; font-weight:bold;">#${v.sku}</code> ↳ ${finalDesc}</span>
                                     <span>Цена: ${v.price} | Наличност: <span class="badge-stock" style="background:${v.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${v.stock === 'В наличност' ? '#2e7d32' : '#c62828'};">${v.stock}</span></span>
-                                    ${v.isLocked ? '<span class="badge-modified">🔒 Ръчно модифициран (Заключен)</span>' : ''}
+                                    ${v.isLocked ? '<span class="badge-modified">🔒 Ръчно модифициран</span>' : ''}
                                 </div>
                                 
                                 <div class="edit-container">
-                                    <div style="display:flex; gap:10px;">
-                                        <div style="flex:1;">
-                                            <label style="font-size:11px; font-weight:bold; color:#555;">Линк към Снимка за този вкус:</label>
-                                            <input type="text" id="img_${v.sku}" value="${v.image}" style="width:100%; box-sizing:border-box; margin-top:2px;">
-                                        </div>
+                                    <div>
+                                        <label style="font-size:11px; font-weight:bold; color:#555;">Линк към снимка на вкус:</label>
+                                        <input type="text" id="img_${v.sku}" value="${v.image}" style="width:100%; box-sizing:border-box; margin-top:2px;">
                                     </div>
                                     <div>
-                                        <label style="font-size:11px; font-weight:bold; color:#555;">Уникално SEO Описание:</label>
+                                        <label style="font-size:11px; font-weight:bold; color:#555;">Персонализирано описание (Няма да се промени от фийда):</label>
                                         <textarea id="desc_${v.sku}" rows="2" style="width:100%; box-sizing:border-box; margin-top:2px; resize:vertical;">${v.description}</textarea>
                                     </div>
                                     <div style="text-align:right;">
@@ -277,14 +275,14 @@
                         </tr>`;
                     });
                 } else {
-                    // Б) САМОСТОЯТЕЛЕН ПРОДУКТ
+                    // Б) ЕДИНИЧЕН САМОСТОЯТЕЛЕН ПРОДУКТ
                     const singleVar = group.variations[0];
                     let singleDesc = singleVar.pack ? `Разфасовка: ${singleVar.pack}` : "Основен вариант";
 
-                    html += `<tr class="row-standalone" onclick="toggleVariations('single-edit-${index}')" style="cursor:pointer;">
+                    html += `<tr class="row-standalone" onclick="toggleVariations('single-edit-${index}')">
                         <td>📄 ${group.productName} <small style="color:#777; margin-left:5px;"><code>#${singleVar.sku}</code></small> ${singleVar.isLocked ? '<span class="badge-modified">🔒 Ръчно заключен</span>' : ''}</td>
                         <td><b>${group.brand}</b></td>
-                        <td>${singleDesc} (Кликни за редакция)</td>
+                        <td>${singleDesc}</td>
                         <td><b>${singleVar.price}</b></td>
                         <td><span class="badge-stock" style="background:${singleVar.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${singleVar.stock === 'В наличност' ? '#2e7d32' : '#c62828'};">${singleVar.stock}</span></td>
                     </tr>
@@ -292,11 +290,11 @@
                         <td colspan="5" style="padding-left: 20px; background:#fafbfc; border-left: 4px solid #28a745;">
                             <div class="edit-container">
                                 <div>
-                                    <label style="font-size:11px; font-weight:bold; color:#555;">Линк към потребителска снимка:</label>
+                                    <label style="font-size:11px; font-weight:bold; color:#555;">Линк към снимка:</label>
                                     <input type="text" id="img_${singleVar.sku}" value="${singleVar.image}" style="width:100%; box-sizing:border-box;">
                                 </div>
                                 <div>
-                                    <label style="font-size:11px; font-weight:bold; color:#555;">Потребителско Описание (Няма да се промени от фийда):</label>
+                                    <label style="font-size:11px; font-weight:bold; color:#555;">Потребителско Описание за този продукт:</label>
                                     <textarea id="desc_${singleVar.sku}" rows="2" style="width:100%; box-sizing:border-box;">${singleVar.description}</textarea>
                                 </div>
                                 <div style="text-align:right;">
@@ -310,11 +308,11 @@
 
             tableBody.innerHTML = html;
             statusBox.className = 'import-status status-success';
-            statusBox.innerText = `✅ Успешно синхронизиране! Всички нови цени и наличности са обновени, а твоите ръчни редакции остават непокътнати.`;
+            statusBox.innerText = `Страхотно! Всички продукти бяха прочетени и подредени перфектно по разновидности! Твоите ръчно редактирани продукти остават защитени.`;
             productsBox.style.display = 'block';
         }
 
-        // ФУНКЦИЯ ЗА ЗАПАЗВАНЕ НА РЪЧНИТЕ ПРОМЕНИ И ЗАКЛЮЧВАНЕ
+        // ФУНКЦИЯ ЗА ЗАКЛЮЧВАНЕ НА ОПИСАНИЯТА В LOCALSTORAGE
         function saveProductOverride(sku) {
             const inputImg = document.getElementById(`img_${sku}`).value.trim();
             const inputDesc = document.getElementById(`desc_${sku}`).value.trim();
@@ -324,12 +322,12 @@
                 customDesc: inputDesc
             };
 
-            // Записваме в локалната база на браузъра
+            // Запазваме в постоянната памет на браузъра
             localStorage.setItem(`custom_edit_${sku}`, JSON.stringify(overrideData));
-            alert(`🔒 Продукт #${sku} е заключен успешно! Фийдът вече няма да променя неговата снимка и описание.`);
+            alert(`🔒 Продукт #${sku} е заключен успешно! При следващите импорти неговата снимка и описание няма да бъдат докоснати.`);
             
-            // Преначертаваме таблицата веднага, за да се отрази промяната
-            displayGroupedCatalog(globalGroupedData.map(group => {
+            // Динамично обновяваме текущия изглед без презареждане на цялата страница
+            globalGroupedData = globalGroupedData.map(group => {
                 group.variations = group.variations.map(v => {
                     if (v.sku === sku) {
                         v.image = inputImg;
@@ -339,7 +337,8 @@
                     return v;
                 });
                 return group;
-            }));
+            });
+            displayGroupedCatalog(globalGroupedData);
         }
 
         function toggleVariations(className) {
@@ -349,7 +348,7 @@
             }
         }
 
-        // ЛОКАЛЕН ФАЙЛ (ВАРИАНТ А)
+        // ВАРИАНТ А: ЗАРЕЖДАНЕ ОТ ЛОКАЛЕН ФАЙЛ
         document.getElementById('feedFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -359,13 +358,13 @@
                     const groupedCatalog = parseXmlAndGroupProducts(evt.target.result);
                     displayGroupedCatalog(groupedCatalog);
                 } catch (error) {
-                    alert("Грешка при парсване: " + error.message);
+                    alert("Грешка при обработката на файла: " + error.message);
                 }
             };
             reader.readAsText(file);
         });
 
-        // URL СИНХРОНИЗАЦИЯ (ВАРИАНТ Б)
+        // ВАРИАНТ Б: ЗАРЕЖДАНЕ ОТ URL АДРЕС
         const runUrlImport = async () => {
             const urlInput = document.getElementById('feedUrlInput').value.trim();
             const statusBox = document.getElementById('importStatusBox');
@@ -373,40 +372,39 @@
 
             statusBox.style.display = 'block';
             statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Изтегляне на фийда и сливане с твоите заключени описания...';
+            statusBox.innerText = '⏳ Изтегляне на фийда от сървъра и филтриране през защитната база...';
 
             try {
-                let finalUrl = urlInput;
-                if(finalUrl.includes('description=1')) {
-                    finalUrl = finalUrl.replace('description=1', 'description=0');
-                }
-                const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(finalUrl);
+                // Използваме прокси за избягване на CORS проблеми при тестване
+                const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(urlInput);
                 const response = await fetch(proxyUrl);
                 const textData = await response.text();
                 const groupedCatalog = parseXmlAndGroupProducts(textData);
                 displayGroupedCatalog(groupedCatalog);
-                secondsLeft = 3600; 
+                secondsLeft = 3600; // Рестартираме таймера
             } catch (error) {
                 statusBox.className = 'import-status status-error';
-                statusBox.innerHTML = `❌ Грешка при връзката. Моля, използвай синия Вариант А горе за локално зареждане.`;
+                statusBox.innerHTML = `❌ Грешка при връзката. Моля, използвай синия Вариант А горе за директно локално зареждане на XML файла.`;
             }
         };
 
         document.getElementById('btnRunImport').addEventListener('click', runUrlImport);
 
-        // ХЕНДЛЪР ЗА АВТОМАТИЧНИЯ ТАЙМЕР
+        // ХЕНДЛЪР НА АВТОМАТИЧНИЯ ТАЙМЕР НА ВСЕКИ ЧАС
         document.getElementById('chkAutoRefresh').addEventListener('change', function(e) {
             const timerBadge = document.getElementById('txtTimer');
             if (e.target.checked) {
                 timerBadge.style.display = 'inline-block';
                 secondsLeft = 3600;
+                
                 countdownInterval = setInterval(() => {
                     secondsLeft--;
                     if(secondsLeft <= 0) secondsLeft = 3600;
                     const mins = Math.floor(secondsLeft / 60);
                     const secs = secondsLeft % 60;
-                    timerBadge.innerText = `Следващ синк след: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    timerBadge.innerText = `Следващо обновяване след: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 }, 1000);
+
                 autoRefreshInterval = setInterval(runUrlImport, 3600000);
                 runUrlImport();
             } else {
