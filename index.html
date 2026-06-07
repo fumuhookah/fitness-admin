@@ -14,21 +14,21 @@
         .menu-item { padding: 10px 15px; border-bottom: 1px solid #e9ecef; font-size: 13px; font-weight: bold; color: #495057; cursor: pointer; }
         .menu-item:hover { background-color: #e9ecef; }
         .menu-item.active { background-color: #1a1a1a; color: white; border-left: 4px solid #007bff; }
-        .submenu { background-color: #f1f3f5; padding-left: 15px; }
-        .submenu .menu-item { font-weight: normal; font-size: 12px; }
-
+        
         /* ОСНОВНО СЪДЪРЖАНИЕ */
         .main-content { flex: 1; margin-left: 260px; padding: 20px; box-sizing: border-box; min-height: 100vh; }
         
-        /* ФИЛТРИ */
-        .filter-section { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        /* СЕКЦИИ/ЕКРАНИ */
+        .admin-view { display: none; }
+        .admin-view.active { display: block; }
+
+        /* ФИЛТРИ И КАРТИ */
+        .panel-box { background: white; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
-        .input-group { display: flex; flex-direction: column; font-size: 11px; color: #666; }
-        input[type="text"], input[type="date"], select { padding: 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
-        .btn-search { background-color: #007bff; color: white; border: none; padding: 7px 15px; border-radius: 3px; cursor: pointer; font-weight: bold; }
-        .radio-group { font-size: 13px; font-weight: bold; }
-        .radio-group label { font-weight: normal; margin-right: 10px; cursor: pointer; }
-        
+        input[type="text"], input[type="date"], select { padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
+        .btn-blue { background-color: #007bff; color: white; border: none; padding: 9px 18px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-blue:hover { background-color: #0056b3; }
+
         /* ТАБОВЕ */
         .tabs-container { display: flex; gap: 5px; margin-top: 15px; border-bottom: 2px solid #ddd; padding-bottom: 1px; }
         .tab { padding: 8px 15px; font-size: 12px; font-weight: bold; border: 1px solid #ddd; border-bottom: none; background: #e9ecef; border-radius: 4px 4px 0 0; cursor: pointer; }
@@ -40,190 +40,244 @@
         .order-products { width: 60%; padding: 15px; }
         .order-actions { width: 15%; padding: 15px; background: #f8f9fa; border-left: 1px solid #dee2e6; text-align: center; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
         
-        /* ТАБЛИЦА ПРОДУКТИ */
         .products-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .products-table th { background: #f8f9fa; text-align: left; padding: 8px; font-size: 11px; color: #666; border-bottom: 1px solid #dee2e6; }
-        .products-table td { padding: 10px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .products-table td { padding: 10px 8px; border-bottom: 1px solid #eee; }
         
-        /* СТИЛОВЕ ЗА СТАТУСИ И ЕТИКЕТИ */
         .badge { padding: 2px 6px; font-size: 10px; font-weight: bold; color: white; border-radius: 3px; display: inline-block; }
         .badge-b2b { background-color: #0056b3; }
         .badge-pharma { background-color: #28a745; }
         .status-confirmed { background-color: #28a745; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 3px; display: inline-block; }
-        
         .action-btn { padding: 6px; background: white; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; width: 100%; }
-        .action-btn:hover { background: #f1f1f1; }
+
+        /* ТАБЛИЦА ЗА ИМПОРТИРАНИ ПРОДУКТИ */
+        .import-status { padding: 12px; margin-top: 15px; border-radius: 4px; font-weight: bold; display: none; }
+        .status-loading { background: #cce5ff; color: #004085; }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
 
-    <!-- ЛЯВОТО СТРАНИЧНО МЕНЮ -->
+    <!-- ЛЯВО СТРАНИЧНО МЕНЮ -->
     <div class="sidebar">
         <div class="sidebar-header">Админ панел</div>
         <ul class="menu-list">
-            <li class="menu-item">Начало</li>
-            <li class="menu-item active">Поръчки</li>
-            <li class="menu-item">Поръчки | B2B</li>
-            <li class="menu-item">Поръчки | Pharma</li>
+            <li class="menu-item" id="menu-home">Начало</li>
+            <li class="menu-item active" id="menu-orders">Поръчки</li>
+            <li class="menu-item" id="menu-import" style="background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;">📥 Feed Import</li>
             <li class="menu-item">Категории</li>
-            <li class="menu-item">Купони</li>
             <li class="menu-item">Марки</li>
             <li class="menu-item">Продукти</li>
-            <li class="menu-item">Разфасовки</li>
-            <li class="menu-item">Вкусове</li>
-            <li class="menu-item" style="background: #e9ecef;">Фактури ▾</li>
-            <div class="submenu">
-                <li class="menu-item">Издадени</li>
-                <li class="menu-item">Фирми</li>
-            </div>
             <li class="menu-item">Потребители</li>
         </ul>
     </div>
 
-    <!-- ДЯСНАТА ЧАСТ -->
+    <!-- ОСНОВЕН КОНТЕЙНЕР -->
     <div class="main-content">
         
-        <!-- СЕКЦИЯ ФИЛТРИ -->
-        <div class="filter-section">
-            <div class="row">
-                <!-- ДОБАВИХМЕ ID ЗА ТЪРСЕНЕ -->
-                <input type="text" id="searchInput" placeholder="Напиши име, телефон или град..." style="width: 250px;">
-                <div class="input-group"><span>От дата</span><input type="date"></div>
-                <div class="input-group"><span>До дата</span><input type="date"></div>
-                <input type="text" placeholder="Град" style="width: 120px;">
-                <select><option>- Държава -</option><option>България</option></select>
+        <!-- ЕКРАН 1: ПОРЪЧКИ (АКТИВЕН ПО ПОДРАЗБИРАНЕ) -->
+        <div id="view-orders" class="admin-view active">
+            <div class="panel-box">
+                <div class="row">
+                    <input type="text" id="searchInput" placeholder="Напиши име, телефон или град..." style="width: 250px;">
+                    <button class="btn-blue">Търси</button>
+                </div>
+                <div class="tabs-container">
+                    <div class="tab active" data-filter="all">Всички Днес (2)</div>
+                    <div class="tab" data-filter="B2B">B2B (1)</div>
+                    <div class="tab" data-filter="Pharma">Pharma (1)</div>
+                </div>
             </div>
-            <div class="row">
-                <select><option>- Избери марка -</option></select>
-                <select><option>- Всички статуси -</option></select>
-                <button class="btn-search">Търси</button>
-            </div>
-            <div class="row radio-group">
-                <span>Търси по:</span>
-                <label><input type="radio" name="search_type" checked> Всичко</label>
-                <label><input type="radio" name="search_type"> #ID</label>
-                <label><input type="radio" name="search_type"> Име</label>
-                <label><input type="radio" name="search_type"> Телефон</label>
-            </div>
-            <div class="tabs-container">
-                <div class="tab active" data-filter="all">Всички Днес (2)</div>
-                <div class="tab" data-filter="B2B">B2B (1)</div>
-                <div class="tab" data-filter="Pharma">Pharma (1)</div>
-            </div>
-        </div>
-        
-        <!-- СПИСЪК С ПОРЪЧКИТЕ -->
-        <div class="orders-list">
             
-            <!-- ПОРЪЧКА 1: Кристиян -->
-            <div class="order-card" data-type="B2B">
-                <div class="order-client">
-                    <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
-                        RAP <span class="order-id">#2090049</span> &nbsp;
-                        <span class="badge badge-b2b">B2B</span>
+            <div class="orders-list">
+                <!-- Поръчка 1 -->
+                <div class="order-card" data-type="B2B">
+                    <div class="order-client">
+                        <b>RAP #2090049</b> <span class="badge badge-b2b">B2B</span>
+                        <div style="font-size: 15px; font-weight: bold; margin: 5px 0;">Кристиян Климентов</div>
+                        <span class="status-confirmed">ПОТВЪРДЕНА</span>
+                        <div style="margin-top:5px;">📞 0884684777</div>
                     </div>
-                    <div class="client-name" style="font-size: 15px; font-weight: bold; margin-bottom: 8px;">Кристиян Климентов</div>
-                    <div style="margin-bottom: 10px;"><span class="status-confirmed">ПОТВЪРДЕНА</span></div>
-                    <div class="client-phone">📞 0884684777</div>
-                    <div style="word-break: break-all;">✉️ distribution@fitness1.bg</div>
-                    <div style="margin-top: 8px;">📍 <b>гр. Камено, обл. Бургас</b><br><span style="color:#555;">гр. Камено, ул. Витоша 10</span></div>
+                    <div class="order-products">
+                        <table class="products-table">
+                            <thead><tr><th>Продукт</th><th>Цена</th><th>Промо</th></tr></thead>
+                            <tbody><tr><td><b>2 x</b> Shaker Milky Whey Shake</td><td>5.09 €</td><td style="color:red;">3.05 €</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="order-actions"><button class="action-btn">✏️ Редакция</button></div>
                 </div>
-                
-                <div class="order-products">
-                    <table class="products-table">
-                        <thead>
-                            <tr><th>Продукт</th><th style="width: 80px;">Цена</th><th style="width: 100px;">Промо</th><th style="width: 80px;">Намаление</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>2 x</strong> 6PAK Nutrition<br><span style="color: #0056b3; font-weight: bold;">Shaker Milky Whey Shake - Purple</span></td>
-                                <td>5.09 €</td><td style="color: red; font-weight: bold;">3.05 €</td><td style="color: green;">[40%]</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div style="text-align: right; margin-top: 15px; font-size: 14px; font-weight: bold;">Общо: 66.66 €</div>
-                </div>
-                
-                <div class="order-actions">
-                    <button class="action-btn" onclick="alert('Редакция на поръчка #2090049')">✏️ Редакция</button>
+                <!-- Поръчка 2 -->
+                <div class="order-card" data-type="Pharma">
+                    <div class="order-client">
+                        <b>RAP #2090037</b> <span class="badge badge-pharma">Pharma</span>
+                        <div style="font-size: 15px; font-weight: bold; margin: 5px 0;">Георги Семов</div>
+                        <span class="status-confirmed">ПОТВЪРДЕНА</span>
+                        <div style="margin-top:5px;">📞 0877009533</div>
+                    </div>
+                    <div class="order-products">
+                        <table class="products-table">
+                            <thead><tr><th>Продукт</th><th>Цена</th><th>Промо</th></tr></thead>
+                            <tbody><tr><td><b>1 x</b> BEST Nattokinase 2,000 FUs</td><td>71.56 €</td><td style="color:red;">62.97 €</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="order-actions"><button class="action-btn">✏️ Редакция</button></div>
                 </div>
             </div>
-
-            <!-- ПОРЪЧКА 2: Георги -->
-            <div class="order-card" data-type="Pharma">
-                <div class="order-client">
-                    <div style="font-weight: bold; color: #333; margin-bottom: 5px;">
-                        RAP <span class="order-id">#2090037</span> &nbsp;
-                        <span class="badge badge-pharma">Pharma</span>
-                    </div>
-                    <div class="client-name" style="font-size: 15px; font-weight: bold; margin-bottom: 8px;">Георги Семов</div>
-                    <div style="margin-bottom: 10px;"><span class="status-confirmed">ПОТВЪРДЕНА</span></div>
-                    <div class="client-phone">📞 0877009533</div>
-                    <div>✉️ jorosemov@gmail.com</div>
-                    <div style="margin-top: 8px;">📍 <b>гр. София, обл. София</b><br><span style="color:#555;">жк. Гео Милев, бл. 9</span></div>
-                </div>
-                
-                <div class="order-products">
-                    <table class="products-table">
-                        <thead>
-                            <tr><th>Продукт</th><th style="width: 80px;">Цена</th><th style="width: 100px;">Промо</th><th style="width: 80px;">Намаление</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>1 x</strong> Doctor's Best<br><span style="color: #0056b3; font-weight: bold;">BEST Nattokinase 2,000 FUs</span></td>
-                                <td>71.56 €</td><td style="color: red; font-weight: bold;">62.97 €</td><td style="color: green;">[12%]</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div style="text-align: right; margin-top: 15px; font-size: 14px; font-weight: bold;">Общо: 62.97 €</div>
-                </div>
-                
-                <div class="order-actions">
-                    <button class="action-btn" onclick="alert('Редакция на поръчка #2090037')">✏️ Редакция</button>
-                </div>
-            </div>
-
         </div>
+
+        <!-- ЕКРАН 2: FEED IMPORT (МЕНЮТО СЕ СЪЗДАВА ТУК) -->
+        <div id="view-import" class="admin-view">
+            <h2>📥 Модул: Външен Feed Импорт на продукти</h2>
+            <p style="color: #666; font-size: 14px;">Постави твоя XML или JSON Feed линк по-долу, за да изтеглиш и налееш продуктите директно в системата.</p>
+            
+            <div class="panel-box">
+                <div class="row" style="display: flex; gap: 15px; align-items: flex-end;">
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555;">Feed URL адрес:</label>
+                        <input type="text" id="feedUrlInput" placeholder="https://example.com/products-feed.json" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <button class="btn-blue" id="btnRunImport" style="background-color: #28a745; height: 35px;">Стартирай Импорт</button>
+                </div>
+                
+                <small style="color: #777;">💡 <i>Ако нямаш линк под ръка, остави полето празно и натисни бутона – системата ще зареди тестов демонстрационен фийд!</i></small>
+                
+                <!-- Съобщение за статус -->
+                <div id="importStatusBox" class="import-status"></div>
+            </div>
+
+            <!-- Място, където се генерират импортираните продукти -->
+            <div class="panel-box" id="importedProductsBox" style="display: none;">
+                <h3>Налети продукти в реално време:</h3>
+                <table class="products-table" id="importedProductsTable">
+                    <thead>
+                        <tr>
+                            <th>SKU код</th>
+                            <th>Марка</th>
+                            <th>Име на продукт</th>
+                            <th>Цена</th>
+                            <th>Статус Наличност</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Тук JavaScript ще налее редовете -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <!-- ТУК Е МАГИЯТА: JAVASCRIPT ЛОГИКА ЗА ТЪРСЕНЕ И ТАБОВЕ -->
+    <!-- JAVASCRIPT ЛОГИКА -->
     <script>
-        // 1. Логика за интерактивно търсене в реално време
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchText = e.target.value.toLowerCase();
-            const orderCards = document.querySelectorAll('.order-card');
-            
-            orderCards.forEach(card => {
-                const clientText = card.querySelector('.order-client').innerText.toLowerCase();
-                if (clientText.includes(searchText)) {
-                    card.style.display = 'flex'; // Показва поръчката
-                } else {
-                    card.style.display = 'none'; // Скрива я
-                }
-            });
+        // 1. НАВИГАЦИЯ: Превключване между екраните
+        const menuOrders = document.getElementById('menu-orders');
+        const menuImport = document.getElementById('menu-import');
+        const viewOrders = document.getElementById('view-orders');
+        const viewImport = document.getElementById('view-import');
+
+        menuOrders.addEventListener('click', () => {
+            menuOrders.classList.add('active');
+            menuImport.classList.remove('active');
+            viewOrders.classList.add('active');
+            viewImport.classList.remove('active');
         });
 
-        // 2. Логика за превключване на табовете (Всички, B2B, Pharma)
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Премахни активния клас от стария таб и го сложи на новия
-                document.querySelector('.tab.active').classList.remove('active');
-                this.classList.add('active');
-                
-                const filterValue = this.getAttribute('data-filter');
-                const orderCards = document.querySelectorAll('.order-card');
-                
-                orderCards.forEach(card => {
-                    if (filterValue === 'all' || card.getAttribute('data-type') === filterValue) {
-                        card.style.display = 'flex';
+        menuImport.addEventListener('click', () => {
+            menuImport.classList.add('active');
+            menuOrders.classList.remove('active');
+            viewImport.classList.add('active');
+            viewOrders.classList.remove('active');
+        });
+
+        // 2. ФИД ИМПОРТЪТ: Основната функция
+        document.getElementById('btnRunImport').addEventListener('click', async () => {
+            const urlInput = document.getElementById('feedUrlInput').value.trim();
+            const statusBox = document.getElementById('importStatusBox');
+            const productsBox = document.getElementById('importedProductsBox');
+            const tableBody = document.querySelector('#importedProductsTable tbody');
+            
+            // Нулиране на интерфейса
+            statusBox.style.display = 'block';
+            statusBox.className = 'import-status status-loading';
+            statusBox.innerText = '⏳ Връзка с фийда и извличане на данните... Моля изчакайте.';
+            productsBox.style.display = 'none';
+            tableBody.innerHTML = '';
+
+            let productsData = [];
+
+            // Демонстрационни данни (в случай, че полето е празно за тест)
+            if (urlInput === "") {
+                productsData = [
+                    { sku: "FIT-ON-99", brand: "Optimum Nutrition", name: "100% Whey Gold Standard - 2.27kg", price: "64.99 €", stock: "В наличност (45 бр)" },
+                    { sku: "FIT-FL-42", brand: "Forcelab", name: "The King Pre-Workout (Синя Малина)", price: "31.49 €", stock: "В наличност (12 бр)" },
+                    { sku: "FIT-6P-11", brand: "6PAK Nutrition", name: "Shaker Milky Whey Shake - Purple 650ml", price: "3.05 €", stock: "Ограничено количество" },
+                    { sku: "FIT-DB-07", brand: "Doctor's Best", name: "BEST Nattokinase 2,000 FUs (270 капсули)", price: "62.97 €", stock: "В наличност (3 бр)" }
+                ];
+            } else {
+                // Опит за реално извличане от външен URL адрес
+                try {
+                    const response = await fetch(urlInput);
+                    if (!response.ok) throw new Error("Грешка при изтегляне на фийда.");
+                    
+                    // Проверка дали фийдът е JSON или XML
+                    const contentType = response.headers.get("content-type") || "";
+                    if (contentType.includes("application/json")) {
+                        productsData = await response.json();
                     } else {
-                        card.style.display = 'none';
+                        // XML парсване за стандартни фийдове
+                        const textData = await response.text();
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(textData, "text/xml");
+                        const items = xmlDoc.getElementsByTagName("product") || xmlDoc.getElementsByTagName("item");
+                        
+                        for (let i = 0; i < items.length; i++) {
+                            productsData.push({
+                                sku: items[i].getElementsByTagName("sku")[0]?.textContent || "N/A",
+                                brand: items[i].getElementsByTagName("brand")[0]?.textContent || "Външна марка",
+                                name: items[i].getElementsByTagName("name")[0]?.textContent || items[i].getElementsByTagName("title")[0]?.textContent || "Неизвестен продукт",
+                                price: items[i].getElementsByTagName("price")[0]?.textContent || "0.00 €",
+                                stock: "Импортиран"
+                            });
+                        }
                     }
+                } catch (error) {
+                    statusBox.className = 'import-status status-error';
+                    statusBox.innerHTML = `❌ <b>Грешка при импорта:</b> Сървърът блокира директната връзка (CORS защита) или линкът е невалиден.<br><small>За целите на разработката, пробвай да изпразниш полето и натисни бутона за тест.</small>`;
+                    return;
+                }
+            }
+
+            // Визуализиране на обработените продукти в таблицата
+            if (productsData.length > 0) {
+                productsData.forEach(prod => {
+                    const row = `<tr>
+                        <td><code>${prod.sku}</code></td>
+                        <td><b>${prod.brand}</b></td>
+                        <td style="color:#0056b3; font-weight:bold;">${prod.name}</td>
+                        <td style="color:green; font-weight:bold;">${prod.price}</td>
+                        <td><span style="background:#e8f5e9; color:#2e7d32; padding:3px 6px; font-size:11px; border-radius:3px;">${prod.stock}</span></td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
                 });
+
+                statusBox.className = 'import-status status-success';
+                statusBox.innerText = `✅ Успешен импорт! Успешно бяха налети ${productsData.length} продукта във вашата база данни.`;
+                productsBox.style.display = 'block';
+            } else {
+                statusBox.className = 'import-status status-error';
+                statusBox.innerText = `⚠️ Фийдът беше прочетен, но вътре не бяха намерени разпознаваеми продукти.`;
+            }
+        });
+
+        // Търсачка за поръчките (от предната стъпка)
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            document.querySelectorAll('.order-card').forEach(card => {
+                const clientText = card.querySelector('.order-client').innerText.toLowerCase();
+                card.style.display = clientText.includes(searchText) ? 'flex' : 'none';
             });
         });
     </script>
-
 </body>
 </html>
