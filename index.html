@@ -126,19 +126,21 @@
 
             <div class="panel-box" id="importedProductsBox" style="display: none;">
                 <h3>Налети продукти в реално време:</h3>
-                <table class="products-table" id="importedProductsTable">
-                    <thead>
-                        <tr>
-                            <th>ID код</th>
-                            <th>Марка</th>
-                            <th>Име на продукт + Разфасовка</th>
-                            <th>Регулярна Цена</th>
-                            <th>Статус Наличност</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
+                <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px;">
+                    <table class="products-table" id="importedProductsTable">
+                        <thead style="position: sticky; top: 0; background: #f8f9fa;">
+                            <tr>
+                                <th>ID код</th>
+                                <th>Марка</th>
+                                <th>Име на продукт + Разфасовка</th>
+                                <th>Регулярна Цена</th>
+                                <th>Статус Наличност</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -170,14 +172,14 @@
             
             statusBox.style.display = 'block';
             statusBox.className = 'import-status status-loading';
-            statusBox.innerText = '⏳ Роботът чете структурата на XML фийда... Моля изчакайте.';
+            statusBox.innerText = '⏳ Роботът преминава през CORS прокси тунел и чете XML фийда... Моля изчакайте, файлът е голям.';
             productsBox.style.display = 'none';
             tableBody.innerHTML = '';
 
             let productsData = [];
 
             if (urlInput === "") {
-                // Демо продукт, базиран точно на пратената от теб структура!
+                // Демо данни
                 productsData = [{
                     sku: "94803",
                     brand: "6PAK Nutrition",
@@ -187,21 +189,27 @@
                 }];
             } else {
                 try {
-                    const response = await fetch(urlInput);
-                    if (!response.ok) throw new Error("Грешка при зареждане на линка.");
+                    // ИЗПОЛЗВАМЕ БЕЗПЛАТЕН CORS ПРОКСИ ТУНЕЛ, ЗА ДА ЗАОБИКОЛИМ ЗАЩИТАТА НА БРАУЗЪРА
+                    const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(urlInput);
+                    
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error("Грешка при изтегляне на данните през прокси сървъра.");
                     
                     const textData = await response.text();
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(textData, "text/xml");
                     
-                    // Хващаме всички елементи, които съдържат тага <product_name>
+                    // Търсим таговете за име на продукта
                     const productElements = xmlDoc.getElementsByTagName("product_name");
                     
                     if(productElements.length === 0) {
-                        throw new Error("Не бяха намерени тагове <product_name> в този XML.");
+                        throw new Error("Файлът беше прочетен, но вътре липсват продуктови тагове (<product_name>).");
                     }
 
-                    for (let i = 0; i < productElements.length; i++) {
+                    // Ограничаваме импорта до първите 200 продукта, за да не забие браузъра при рендериране на таблицата
+                    const limit = Math.min(productElements.length, 200);
+
+                    for (let i = 0; i < limit; i++) {
                         const parent = productElements[i].parentNode;
                         
                         const id = parent.getElementsByTagName("id")[0]?.textContent || "N/A";
@@ -232,25 +240,26 @@
                     }
                 } catch (error) {
                     statusBox.className = 'import-status status-error';
-                    statusBox.innerHTML = `❌ <b>Грешка при импорт:</b> Външният сървър блокира директната връзка (CORS защита) или линкът е невалиден.<br><small>Остави полето празно и натисни бутона, за да видиш симулацията с твоя Шейкър!</small>`;
+                    statusBox.innerHTML = `❌ <b>Грешка при импорт:</b> ${error.message}<br><small>Увери се, че линкът е правилен.</small>`;
                     return;
                 }
             }
 
             // Изваждане на продуктите на екрана
+            let rowsHtml = "";
             productsData.forEach(prod => {
-                const row = `<tr>
+                rowsHtml += `<tr>
                     <td><code>#${prod.sku}</code></td>
                     <td><b>${prod.brand}</b></td>
                     <td style="color:#0056b3; font-weight:bold;">${prod.name}</td>
                     <td><b>${prod.price}</b></td>
                     <td><span style="background:${prod.stock === 'В наличност' ? '#e8f5e9' : '#ffebee'}; color:${prod.stock === 'В наличност' ? '#2e7d32' : '#c62828'}; padding:3px 6px; font-size:11px; border-radius:3px; font-weight:bold;">${prod.stock}</span></td>
                 </tr>`;
-                tableBody.innerHTML += row;
             });
+            tableBody.innerHTML = rowsHtml;
 
             statusBox.className = 'import-status status-success';
-            statusBox.innerText = `✅ Успех! Фийдът беше прочетен. Налети продукти в базата данни: ${productsData.length}`;
+            statusBox.innerText = `✅ Успех! Фийдът беше прочетен успешно през CORS прокси. Визуализирани първите ${productsData.length} продукта.`;
             productsBox.style.display = 'block';
         });
     </script>
