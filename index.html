@@ -5,10 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Админ Панел - Fitness1 (Умен Интегриран Импорт)</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; display: flex; color: #333; }
-        
-        /* ЛЯВО МЕНЮ (SIDEBAR) */
-        .sidebar { width: 260px; background-color: #f8f9fa; border-right: 1px solid #dee2e6; height: 100vh; overflow-y: auto; position: fixed; }
+       <style>
+    /* AI Cyberpunk Тема */
+    body { 
+        font-family: 'Segoe UI', sans-serif; 
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+        margin: 0; 
+        padding: 0; 
+        display: flex; 
+        color: #ffffff; 
+    }
+
+    /* Модерно странично меню */
+    .sidebar { 
+        width: 260px; 
+        background: rgba(255, 255, 255, 0.05); 
+        border-right: 1px solid rgba(255, 255, 255, 0.1); 
+        height: 100vh; 
+        overflow-y: auto; 
+        position: fixed; 
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Добави това за по-добър контраст на текста в менюто */
+    .sidebar a { color: #ffffff; text-decoration: none; padding: 15px; display: block; }
+    .sidebar a:hover { background: #ff00cc; }
+</style>
         .sidebar-header { background-color: #1a1a1a; color: white; padding: 15px; font-weight: bold; font-size: 16px; text-align: center; }
         .menu-list { list-style: none; padding: 0; margin: 0; }
         .menu-item { padding: 10px 15px; border-bottom: 1px solid #e9ecef; font-size: 13px; font-weight: bold; color: #495057; cursor: pointer; }
